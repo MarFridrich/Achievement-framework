@@ -13,13 +13,16 @@ namespace BusinessLayer.Services.Generic.User
      
         Task<TUserDto> Get(int id);
      
-        Task<DAL.Entities.User> Create(DAL.Entities.User entity);
+        Task<DAL.Entities.User> Create(TUserDto entity);
      
         Task Update(TUserDto entity);
      
         Task Delete(int id);
 
         Task<IEnumerable<TAchievementGroupDto>> GetAchievementGroupsForUser(int userId);
+        
         Task<IEnumerable<TAchievementDto>> GetAchievementsForUser(int userId);
+
+        Task<IEnumerable<TUserDto>> GetUsersFromAchievementGroup(int groupId);
     }
 }

@@ -34,6 +34,36 @@ namespace BusinessLayer.QueryObjects
             }
         }
 
+
+        private void FilterNonCompletedForUser(ICollection<Expression<Func<Achievement, bool>>> list,
+            AchievementFilterDto filter)
+        {
+            if (filter.OnlyNonCompletedForUserId.Item2 == 0)
+            {
+                return;
+            }
+
+            var achievementsCompleted = Context
+                .UserCompletedAchievements
+                .Where(uca => uca.UserId == filter.OnlyNonCompletedForUserId.Item2)
+                .Select(uca => uca.AchievementId);
+
+            var allAchievements = Context
+                .Users
+                .Where(u => u.Id == filter.OnlyNonCompletedForUserId.Item2)
+                .SelectMany(u => u.AchievementGroups)
+                .SelectMany(g => g.Achievements)
+                .Select(a => a.Id);
+
+            var nonCompletedIds = allAchievements
+                .Except(achievementsCompleted);
+
+            Expression<Func<Achievement, bool>> toAdd = ach => nonCompletedIds.Contains(ach.Id);
+            
+            list.Add(toAdd);
+        }
+        
+        
         private void FilterAchievementEvaluation(ICollection<Expression<Func<Achievement, bool>>> list,
             AchievementFilterDto filter)
         {
@@ -41,7 +71,7 @@ namespace BusinessLayer.QueryObjects
             {
                 return;
             }
-            
+           
             Expression<Func<Achievement, bool>> toAdd = ach => ach.Evaluation == (DAL.Entities.Evaluations) filter.EvaluationType;
             list.Add(toAdd);
         }

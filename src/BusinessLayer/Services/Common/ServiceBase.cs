@@ -3,8 +3,7 @@ using BusinessLayer.DTOs.Common;
 
 namespace BusinessLayer.Services.Common
 {
-    public abstract class ServiceBase<TDto>
-    where TDto : DtoBase
+    public abstract class ServiceBase
     {
         protected readonly IMapper Mapper;
 

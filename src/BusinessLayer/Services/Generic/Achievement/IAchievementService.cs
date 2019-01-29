@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
+using BusinessLayer.QueryObjects.Base.Results;
 
 namespace BusinessLayer.Services.Generic.Achievement
 {
@@ -12,7 +13,7 @@ namespace BusinessLayer.Services.Generic.Achievement
      
              Task<TAchievementDto> Get(int id);
      
-             Task<DAL.Entities.Achievement> Create(DAL.Entities.Achievement entity);
+             Task<DAL.Entities.Achievement> Create(TAchievementDto entity);
      
              Task Update(TAchievementDto entity);
      
@@ -23,6 +24,10 @@ namespace BusinessLayer.Services.Generic.Achievement
              Task<IEnumerable<TUserDto>> GetAllUsersWhichHaveAchievement(int achievementId);
              
              Task<TUserDto> GetAchievementGroupOwner(int achievementId);
+
+             Task<IEnumerable<TAchievementDto>> GetAllAchievementsOfUser(int userId);
+
+             Task<QueryResult<TAchievementDto>> GetNonCompletedAchievementsOfUser(int userId);
 
     }
 }

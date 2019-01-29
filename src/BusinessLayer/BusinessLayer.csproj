@@ -17,8 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Facades" />
-      <Folder Include="Services\Generic" />
+      <Folder Include="Services\Base" />
     </ItemGroup>
 
 </Project>

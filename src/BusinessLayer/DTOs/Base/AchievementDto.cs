@@ -26,7 +26,7 @@ namespace BusinessLayer.DTOs.Base
     
         public RewardDto Reward { get; set; }
         
-        public virtual ICollection<UserCompletedAchievementDto> UserCompletedAchievements { get; set; }
+        public ICollection<UserCompletedAchievementDto> UserCompletedAchievements { get; set; }
     
         public int AchievementGroupId { get; set; }
     

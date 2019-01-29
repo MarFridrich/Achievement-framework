@@ -20,9 +20,9 @@ namespace BusinessLayer.QueryObjects.Base
         where TEntity : class, IEntity
         where TFilter : FilterDtoBase
     {
-        private readonly IMapper mapper;
+        private readonly IMapper _mapper;
 
-        private AchievementDbContext context { get; set; }
+        protected AchievementDbContext Context { get; set; }
         protected Expression<Func<TEntity, bool>> Predicate { get; set; }
         protected string OrderBy { get; set; }
         protected bool OrderByDescending { get; set; } = false;
@@ -36,8 +36,8 @@ namespace BusinessLayer.QueryObjects.Base
 
         public QueryBase(AchievementDbContext context, IMapper mapper)
         {
-            this.context = context;
-            this.mapper = mapper;
+            this.Context = context;
+            this._mapper = mapper;
         }
 
         protected abstract void ApplyWhereClaus(TFilter filter);
@@ -45,7 +45,7 @@ namespace BusinessLayer.QueryObjects.Base
         public async Task<QueryResult<TDto>> ExecuteAsync(TFilter filter)
         {
             ApplyWhereClaus(filter);
-            IQueryable<TEntity> queryable = context.Set<TEntity>();
+            IQueryable<TEntity> queryable = Context.Set<TEntity>();
 
             if (Predicate != null)
             {
@@ -61,7 +61,7 @@ namespace BusinessLayer.QueryObjects.Base
             }
 
             var list = await queryable.ToListAsync();
-            var mappedList = mapper.Map<IList<TDto>>(list);
+            var mappedList = _mapper.Map<IList<TDto>>(list);
 
             return new QueryResult<TDto>(mappedList, PageSize, DesiredPage);
         }

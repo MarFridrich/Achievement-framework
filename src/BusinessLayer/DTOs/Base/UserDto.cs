@@ -12,8 +12,10 @@ namespace BusinessLayer.DTOs.Base
 
         public string LastName { get; set; }
         
-        public virtual ICollection<UserCompletedAchievementDto> UserCompletedAchievements { get; set; }
+        public ICollection<UserCompletedAchievementDto> UserCompletedAchievements { get; set; }
         
-        public virtual ICollection<UserAchievementGroupDto> UserGroups { get; set; }
+        public ICollection<UserAchievementGroupDto> UserGroups { get; set; }
+        
+        public ICollection<NotificationDto> Notifications { get; set; }
     }
 }

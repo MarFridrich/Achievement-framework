@@ -15,10 +15,12 @@ namespace BusinessLayer.Services.Generic.User
         where TAchievementDto : AchievementDto
 
     {
-
-        public AchievementDbContext Context; 
-        public UserService(IMapper mapper, ICrudServicesAsync service) : base(mapper, service)
+        private readonly ICrud<DAL.Entities.AchievementGroup, AchievementGroupDto> _achievementGroupRepository;
+        public UserService(IMapper mapper, ICrudServicesAsync service, AchievementDbContext context,
+            ICrud<DAL.Entities.AchievementGroup, AchievementGroupDto> achievementGroupRepository) 
+            : base(mapper, service, context)
         {
+            _achievementGroupRepository = achievementGroupRepository;
         }
 
         public async Task<IEnumerable<TAchievementGroupDto>> GetAchievementGroupsForUser(int userId)
@@ -38,5 +40,14 @@ namespace BusinessLayer.Services.Generic.User
                 .SelectMany(a => Mapper.Map<IEnumerable<TAchievementDto>>(a.AchievementGroup.Achievements))
                 .ToList();
         }
+
+        public async Task<IEnumerable<TUserDto>> GetUsersFromAchievementGroup(int groupId)
+        {
+            var group = await _achievementGroupRepository.Get(groupId);
+            return group?
+                .Users
+                .Cast<TUserDto>()
+                .ToList();
+        } 
     }
 }

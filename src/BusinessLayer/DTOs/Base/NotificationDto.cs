@@ -4,7 +4,7 @@ using GenericServices;
 
 namespace BusinessLayer.DTOs.Base
 {
-    public class NotificationBaseDto : DtoBase, ILinkToEntity<Notification>
+    public class NotificationDto : DtoBase, ILinkToEntity<Notification>
     {
         public string Message { get; set; }
 
