@@ -3,24 +3,42 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLayer.DTOs.Base;
+using BusinessLayer.DTOs.Filter.Base;
+using BusinessLayer.Helpers;
+using BusinessLayer.QueryObjects;
+using BusinessLayer.QueryObjects.Base;
+using BusinessLayer.QueryObjects.Base.Results;
+using BusinessLayer.Repository;
 using BusinessLayer.Services.Common;
 using DAL;
-using GenericServices;
+using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.User
 {
-    public class UserService<TUserDto, TAchievementGroupDto, TAchievementDto> : CrudServiceBase<DAL.Entities.User, TUserDto>, IUserService<TUserDto, TAchievementGroupDto, TAchievementDto>
+    public class UserService<TUserDto, TAchievementGroupDto, TAchievementDto> :
+        RepositoryServiceBase<FrameworkUser, TUserDto, UserFilterDto>,
+        IUserService<TUserDto, TAchievementGroupDto, TAchievementDto>
         where TUserDto : UserDto
         where TAchievementGroupDto : AchievementGroupDto
         where TAchievementDto : AchievementDto
 
     {
-        private readonly ICrud<DAL.Entities.AchievementGroup, AchievementGroupDto> _achievementGroupRepository;
-        public UserService(IMapper mapper, ICrudServicesAsync service, AchievementDbContext context,
-            ICrud<DAL.Entities.AchievementGroup, AchievementGroupDto> achievementGroupRepository) 
-            : base(mapper, service, context)
+        private readonly IRepository<FrameworkAchievementGroup> _achievementGroupRepository;
+        private readonly UserQuery<TUserDto> _userQuery;
+
+
+        public UserService(IMapper mapper, IRepository<FrameworkUser> repository, DbContext context, Types actualModels,
+            IRepository<FrameworkAchievementGroup> achievementGroupRepository, UserQuery<TUserDto> userQuery) : base(mapper, repository, context,
+            actualModels)
         {
             _achievementGroupRepository = achievementGroupRepository;
+            _userQuery = userQuery;
+        }
+
+        public async Task<QueryResult<TUserDto>> ApplyFilter(UserFilterDto filter)
+        {
+            return await _userQuery.UseFilter(filter);
         }
 
         public async Task<IEnumerable<TAchievementGroupDto>> GetAchievementGroupsForUser(int userId)
@@ -34,7 +52,7 @@ namespace BusinessLayer.Services.Generic.User
         
         public async Task<IEnumerable<TAchievementDto>> GetAchievementsForUser(int userId)
         {
-            var user = await Service.ReadSingleAsync<DAL.Entities.User>(userId);
+            var user = await Repository.Get(userId);
             return user?
                 .UserGroups
                 .SelectMany(a => Mapper.Map<IEnumerable<TAchievementDto>>(a.AchievementGroup.Achievements))
@@ -45,9 +63,10 @@ namespace BusinessLayer.Services.Generic.User
         {
             var group = await _achievementGroupRepository.Get(groupId);
             return group?
-                .Users
-                .Cast<TUserDto>()
+                .UserAchievementGroups
+                .Select(ug => Mapper.Map<TUserDto>(ug.User))
                 .ToList();
-        } 
+        }
+
     }
 }

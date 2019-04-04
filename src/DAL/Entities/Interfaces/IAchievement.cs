@@ -4,29 +4,31 @@ using DAL.Entities.JoinTables;
 
 namespace DAL.Entities.Interfaces
 {
-    public interface IAchievement<TReward>
+    public interface IAchievement : IEntity
     {
+
         string Name { get; set; }
 
         string Description { get; set; }
 
         byte[] Image { get; set; }
 
-        int? SubTaskDone { get; set; }
+        ICollection<FrameworkSubTask> SubTasks { get; set; }
 
-        int? SubTasks { get; set; }
-
-        Evaluations Evaluation { get; set; }
-
-        DateTime AccomplishDate { get; set; }
+        FrameworkEvaluations Evaluation { get; set; }
 
         DateTime ValidUntil { get; set; }
 
-        TReward Reward { get; set; }
-        
-        ICollection<UserCompletedAchievements> UserCompletedAchievements { get; set; }
-        
-        AchievementGroup AchievementGroup { get; set; }
+        int RewardId { get; set; }
+
+        FrameworkReward Reward { get; set; }
+        ICollection<FrameworkUserCompletedAchievements> UserCompletedAchievements { get; set; }
+
+        int AchievementGroupId { get; set; }
+
+        FrameworkAchievementGroup AchievementGroup { get; set; }
+
+        FrameworkNotification Notification { get; set; }
 
     }
 }

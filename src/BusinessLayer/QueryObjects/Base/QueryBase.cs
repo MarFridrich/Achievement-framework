@@ -1,18 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLayer.DTOs.Common;
+using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base.Results;
-using DAL;
-using DAL.Entities;
 using DAL.Entities.Interfaces;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using IRole = DAL.IRole;
 
 namespace BusinessLayer.QueryObjects.Base
 {
@@ -20,9 +17,15 @@ namespace BusinessLayer.QueryObjects.Base
         where TEntity : class, IEntity
         where TFilter : FilterDtoBase
     {
-        private readonly IMapper _mapper;
+        protected readonly IMapper Mapper;
 
-        protected AchievementDbContext Context { get; set; }
+        protected DbContext Context { get; set; }
+        
+        protected Types ActualTypes { get; set; }
+
+        private readonly Type _realModel;
+        
+        protected List<Expression<Func<TEntity, bool>>> TmpPredicates = new List<Expression<Func<TEntity, bool>>>();
         protected Expression<Func<TEntity, bool>> Predicate { get; set; }
         protected string OrderBy { get; set; }
         protected bool OrderByDescending { get; set; } = false;
@@ -34,36 +37,92 @@ namespace BusinessLayer.QueryObjects.Base
         public int? DesiredPage { get; private set; }
 
 
-        public QueryBase(AchievementDbContext context, IMapper mapper)
+        public QueryBase(DbContext context, IMapper mapper, Types actualTypes)
         {
-            this.Context = context;
-            this._mapper = mapper;
+            Context = context;
+            Mapper = mapper;
+            ActualTypes = actualTypes;
+            _realModel = actualTypes.GetActualTypeForUsage(typeof(TEntity));
         }
 
         protected abstract void ApplyWhereClaus(TFilter filter);
+        private void CombineTmpPredicatesToOne()
+        {
+            
+            foreach (var predicate in TmpPredicates)
+            {
+                if (Predicate != null)
+                {
+                    var tmp = Predicate;
+                    Predicate = x => tmp.Invoke(x) && predicate.Invoke(x);
+                }
+                else
+                {
+                    Predicate = predicate;
+                }
+            }
+        }
 
+        private void CheckPagingSizes(TFilter filter)
+        {
+            if (filter.RequestedPageNumber.HasValue && filter.RequestedPageNumber < 1)
+            {
+                throw new ArgumentException("Requested page number must be greater than 0");
+            }
+        }
+
+        private void ClearPredicates()
+        {
+            TmpPredicates.Clear();
+            Predicate = null;
+            OrderBy = null;
+            OrderByDescending = false;
+        }
+
+        private void SetVariablesFromFilter(TFilter filter)
+        {
+            OrderBy = filter.SortCriteria;
+            OrderByDescending = filter.SortAscending;
+        }
         public async Task<QueryResult<TDto>> ExecuteAsync(TFilter filter)
         {
+            
+            ClearPredicates();
+            SetVariablesFromFilter(filter);
             ApplyWhereClaus(filter);
-            IQueryable<TEntity> queryable = Context.Set<TEntity>();
+            CombineTmpPredicatesToOne();
+            var queryable = Context.Set<TEntity>(_realModel);
+
+            queryable = filter.Includes.Aggregate(queryable, (current, include) => current.Include(include));
 
             if (Predicate != null)
             {
                 queryable = queryable.Where(Predicate);
             }
 
+            var itemsCount = queryable.Count();
+            if (filter.RequestedPageNumber.HasValue)
+            {
+                CheckPagingSizes(filter);
+                if (filter.PageSize > 0)
+                {
+                    PageSize = filter.PageSize;
+                }
+                
+                queryable = queryable.Skip(PageSize * (filter.RequestedPageNumber.Value - 1)).Take(PageSize);
+            }
+    
             if (!string.IsNullOrWhiteSpace(OrderBy))
             {
-                var prop = TypeDescriptor.GetProperties(typeof(TEntity)).Find(OrderBy, true);
                 queryable = OrderByDescending
-                    ? queryable.OrderByDescending(x => prop.GetValue(x))
-                    : queryable.OrderBy(x => prop.GetValue(x));
+                    ? queryable.OrderByDescending(OrderBy)
+                    : queryable.OrderBy(OrderBy);
             }
 
             var list = await queryable.ToListAsync();
-            var mappedList = _mapper.Map<IList<TDto>>(list);
+            var mappedList = Mapper.Map<IList<TDto>>(list);
 
-            return new QueryResult<TDto>(mappedList, PageSize, DesiredPage);
+            return new QueryResult<TDto>(mappedList, itemsCount, PageSize, filter.RequestedPageNumber);
         }
     }
 }

@@ -10,5 +10,7 @@ namespace BusinessLayer.DTOs.Common
 
         public bool SortAscending { get; set; }
 
+        public string[] Includes { get; set; } = { };
+
     }
 }

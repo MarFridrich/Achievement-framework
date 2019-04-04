@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
+using BusinessLayer.DTOs.Filter.Base;
+using BusinessLayer.QueryObjects.Base.Results;
 
 namespace BusinessLayer.Services.Generic.User
 {
@@ -9,13 +12,18 @@ namespace BusinessLayer.Services.Generic.User
         where TAchievementGroupDto : AchievementGroupDto
         where TAchievementDto : AchievementDto
     {
-        Task<IEnumerable<TUserDto>> ListAllAsync();
-     
+        IQueryable<TUserDto> ListAllAsync();
+
+        Task CreateList(IEnumerable<TUserDto> entity);
         Task<TUserDto> Get(int id);
+        
+        Task<TUserDto> GetWithIncludes(int id, params string[] includes);
      
-        Task<DAL.Entities.User> Create(TUserDto entity);
+        Task<int> Create(TUserDto entity);
      
         Task Update(TUserDto entity);
+
+        Task<QueryResult<TUserDto>> ApplyFilter(UserFilterDto filter);
      
         Task Delete(int id);
 
