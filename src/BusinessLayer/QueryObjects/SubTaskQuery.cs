@@ -18,6 +18,8 @@ namespace BusinessLayer.QueryObjects
         where TEntity : FrameworkSubTask
         where TSubTaskDto : SubTaskDto
     {
+        private SubTaskFilterDto _filter { get; set; }
+        
         public SubTaskQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper, actualTypes)
         {
         }
@@ -25,14 +27,42 @@ namespace BusinessLayer.QueryObjects
         
         private IQueryable<int> GetCompletedSubTasksIds()
         {
-            return Context.Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
+            var userCompletedSubTasks =
+                Context.Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask);
+            if (_filter.UserId != 0)
+            {
+                userCompletedSubTasks = userCompletedSubTasks.Where(ucs => ucs.UserId == _filter.UserId);
+            }
+
+            if (_filter.AchievementId != 0)
+            {
+                userCompletedSubTasks =
+                    userCompletedSubTasks.Where(ucs => ucs.SubTask.AchievementId == _filter.AchievementId);
+            }
+            
+            return userCompletedSubTasks
                 .Select(ucs => ucs.SubTaskId);
+        }
+
+        private IQueryable<int> GetAskedForSubTasksIds()
+        {
+            var askedForSubTask = Context.Set<FrameworkUserAskedForSubTask>(ActualTypes.FrameworkUserAskedForSubTask);
+            if (_filter.UserId != 0)
+            {
+                askedForSubTask = askedForSubTask.Where(uas => uas.UserId == _filter.UserId);
+            }
+
+            if (_filter.AchievementId != 0)
+            {
+                askedForSubTask = askedForSubTask.Where(uas => uas.SubTask.AchievementId == _filter.AchievementId);
+            }
+
+            return askedForSubTask.Select(uas => uas.SubTaskId);
         }
 
         private void FilterAskedForSubTask()
         {
-            var askedForSubTask = Context.Set<FrameworkUserAskedForSubTask>(ActualTypes.FrameworkUserAskedForSubTask)
-                .Select(ucs => ucs.SubTaskId);
+            var askedForSubTask = GetAskedForSubTasksIds();
             Expression<Func<TEntity, bool>> toAdd = s => askedForSubTask.Contains(s.Id);
             TmpPredicates.Add(toAdd);
         }
@@ -121,6 +151,7 @@ namespace BusinessLayer.QueryObjects
         }
         protected override void ApplyWhereClause(SubTaskFilterDto filter)
         {
+            _filter = filter;
             FilterName(filter);
             FilterAchievementId(filter);
             FilterUserId(filter);

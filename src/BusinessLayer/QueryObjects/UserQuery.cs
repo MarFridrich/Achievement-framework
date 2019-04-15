@@ -37,6 +37,7 @@ namespace BusinessLayer.QueryObjects
 
         private IList<int> GetIdsOfCompletedAchievements()
         {
+            
             if (_filter.AchievementId != 0)
             {
                 return Context
