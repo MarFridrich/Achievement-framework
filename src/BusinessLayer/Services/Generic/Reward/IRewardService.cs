@@ -25,7 +25,7 @@ namespace BusinessLayer.Services.Generic.Reward
         Task Update(TRewardDto entity);
      
         Task Delete(int id);
-
+        
         Task<TRewardDto> GetRewardForAchievement(int achievementId);
     }
 }

@@ -55,7 +55,7 @@ namespace BusinessLayer.Helpers
             services.AddScoped(typeof(IAchievementService<,,>), typeof(AchievementService<,,>));
             services.AddScoped(typeof(IAchievementGroupService<,,>), typeof(AchievementGroupService<,,>));
             services.AddScoped(typeof(IRewardService<,>), typeof(RewardService<,>));
-            services.AddScoped(typeof(IUserService<,,>), typeof(UserService<,,>));
+            services.AddScoped(typeof(IUserService<,,,>), typeof(UserService<,,,>));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(ISubTaskService<,>), typeof(SubTaskService<,>));
             services.AddScoped(typeof(AchievementFacade<,,,,,>));

@@ -17,18 +17,18 @@ namespace DAL.Entities
         [ForeignKey("CreatedByUser")]
         public int? CreatedByUserId { get; set; }
         
-        public virtual FrameworkUser CreatedByUser { get; set; }
+        public FrameworkUser CreatedByUser { get; set; }
 
         [Required]
         [ForeignKey("User")]
         public int UserId { get; set; }
         
-        public virtual FrameworkUser User { get; set; }
+        public FrameworkUser User { get; set; }
        
         [ForeignKey("Achievement")]
         public int? AchievementId { get; set; }
         
-        public virtual FrameworkAchievement Achievement { get; set; }
+        public FrameworkAchievement Achievement { get; set; }
         
         [Required]
         public bool WasShowed { get; set; }

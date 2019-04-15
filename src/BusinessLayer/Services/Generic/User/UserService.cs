@@ -16,29 +16,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.User
 {
-    public class UserService<TUserDto, TAchievementGroupDto, TAchievementDto> :
+    public class UserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto> :
         RepositoryServiceBase<FrameworkUser, TUserDto, UserFilterDto>,
-        IUserService<TUserDto, TAchievementGroupDto, TAchievementDto>
+        IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto>
         where TUserDto : UserDto
         where TAchievementGroupDto : AchievementGroupDto
         where TAchievementDto : AchievementDto
+        where TFilterDto : UserFilterDto
 
     {
         private readonly IRepository<FrameworkAchievementGroup> _achievementGroupRepository;
-        private readonly UserQuery<TUserDto> _userQuery;
+        private readonly UserQuery<TUserDto, TFilterDto> _userQuery;
 
 
         public UserService(IMapper mapper, IRepository<FrameworkUser> repository, DbContext context, Types actualModels,
-            IRepository<FrameworkAchievementGroup> achievementGroupRepository, UserQuery<TUserDto> userQuery) : base(mapper, repository, context,
+            IRepository<FrameworkAchievementGroup> achievementGroupRepository, UserQuery<TUserDto, TFilterDto> userQuery) : base(mapper, repository, context,
             actualModels)
         {
             _achievementGroupRepository = achievementGroupRepository;
             _userQuery = userQuery;
         }
 
-        public async Task<QueryResult<TUserDto>> ApplyFilter(UserFilterDto filter)
+        public async Task<QueryResult<TUserDto>> ApplyFilter(TFilterDto filter)
         {
-            return await _userQuery.UseFilter(filter);
+            return await _userQuery.ExecuteAsync(filter);
         }
 
         public async Task<IEnumerable<TAchievementGroupDto>> GetAchievementGroupsForUser(int userId)

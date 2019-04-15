@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.QueryObjects.Base.Results;
+using BusinessLayer.Repository;
 using BusinessLayer.Services.Generic.Achievement;
 using BusinessLayer.Services.Generic.AchievementGroup;
 using DAL.Entities;
@@ -19,13 +20,14 @@ namespace BusinessLayer.Facades
             AchievementGroupService;
 
         protected IAchievementService<FrameworkAchievement, AchievementDto, TUserDto> AchievementService;
-
+        protected IRepository<FrameworkSubTask> SubTaskRepository;
         public AchievementGroupFacade(
             IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto>
-                achievementGroupService, IAchievementService<FrameworkAchievement, AchievementDto, TUserDto> achievementService)
+                achievementGroupService, IAchievementService<FrameworkAchievement, AchievementDto, TUserDto> achievementService, IRepository<FrameworkSubTask> subTaskRepository)
         {
             AchievementGroupService = achievementGroupService;
             AchievementService = achievementService;
+            SubTaskRepository = subTaskRepository;
         }
 
         public async Task<QueryResult<TAchievementGroupDto>> ApplyFilter(AchievementGroupFilterDto filter)
@@ -63,15 +65,25 @@ namespace BusinessLayer.Facades
             await AchievementGroupService.Update(@group);
         }
 
+        private async Task DeleteSubTasks(ICollection<SubTaskDto> subTasks)
+        {
+            foreach (var subTask in subTasks)
+            {
+                await SubTaskRepository.Delete(subTask.Id);
+            }
+        }
+
         public async Task DeleteGroup(int id)
         {
             var achievements = await AchievementService.ApplyFilter(new AchievementFilterDto
             {
-                GroupId = id
+                GroupId = id,
+                Includes = new []{nameof(FrameworkAchievement.SubTasks)}
             });
             
             foreach (var achievement in achievements.Items)
             {
+                await DeleteSubTasks(achievement.SubTasks);
                 await AchievementService.Delete(achievement.Id);
             }
             
@@ -108,6 +120,11 @@ namespace BusinessLayer.Facades
         public async Task RemoveAllUsersFromGroup(int groupId)
         {
             await AchievementGroupService.DeleteAllUsersFromAchievementGroup(groupId);
+        }
+
+        public async Task<bool> IsExpired(int groupId)
+        {
+            return await AchievementGroupService.IsExpired(groupId);
         }
     }
 }

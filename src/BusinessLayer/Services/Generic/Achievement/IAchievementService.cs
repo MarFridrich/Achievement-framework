@@ -46,7 +46,7 @@ namespace BusinessLayer.Services.Generic.Achievement
              Task<QueryResult<TAchievementDto>> GetAllAchievementsFromGroup(int groupId);
 
              Task<bool> CheckIfUserHasAchievement(int achievementId, int userId);
-
+             
              Task<IEnumerable<ValueTuple<TUserDto, DateTime>>> GetUsersWhichAskedForReward(int achievementId);
 
              Task<string> ExportGroupAchievementsToJson(int groupId);
@@ -58,7 +58,7 @@ namespace BusinessLayer.Services.Generic.Achievement
              
              Task<bool> RemoveAskForReward(int userId, int achievementId);
 
-             Task ApproveAchievementToUser(int userId, int achievementId);
+             Task<bool> ApproveAchievementToUser(int userId, int achievementId);
 
              Task RemoveReward(int userId, int achievementId);
 

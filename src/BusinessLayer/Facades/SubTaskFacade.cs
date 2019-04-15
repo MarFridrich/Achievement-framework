@@ -60,5 +60,10 @@ namespace BusinessLayer.Facades
 
             return listOfIds;
         }
+
+        public async Task RemoveCompletedSubTaskFromUser(int userId, int subTaskId)
+        {
+            await SubTaskService.RemoveCompletedSubTaskFromUser(userId, subTaskId);
+        }
     }
 }

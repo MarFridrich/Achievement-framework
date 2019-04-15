@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,6 +10,7 @@ using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
 using BusinessLayer.Services.Common;
 using DAL.Entities;
+using DAL.Entities.JoinTables;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.SubTask
@@ -47,6 +49,78 @@ namespace BusinessLayer.Services.Generic.SubTask
             foreach (var subTask in subTasks.Items)
             {
                 await Delete(subTask.Id);
+            }
+        }
+        
+        public async Task<bool> AskForSubTaskByUser(int userId, int subTaskId)
+        {
+            var tryIfExists = await Context.Set<FrameworkUserAskedForSubTask>(ActualModels.FrameworkUserAskedForSubTask)
+                .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
+            if (tryIfExists != null)
+            {
+                return false;
+            }
+            
+            if (userId == 0 || subTaskId == 0)
+            {
+                return false;
+            }
+
+            var userAskedForSubTask =
+                (FrameworkUserAskedForSubTask) Activator.CreateInstance(ActualModels.FrameworkUserAskedForSubTask);
+            userAskedForSubTask.UserId = userId;
+            userAskedForSubTask.SubTaskId = subTaskId;
+            userAskedForSubTask.DateTime = DateTime.Now;
+
+            await Context.AddAsync(userAskedForSubTask);
+            await Context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ApproveSubTaskToUser(int userId, int subTaskId)
+        {
+            var tryIfExists = await Context.Set<FrameworkUserCompletedSubTask>(ActualModels.FrameworkUserCompletedSubTask)
+                .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
+            if (tryIfExists != null)
+            {
+                return false;
+            }
+            
+            if (userId == 0 || subTaskId == 0)
+            {
+                return false;
+            }
+            
+            var userCompletedSubTask =
+                (FrameworkUserCompletedSubTask) Activator.CreateInstance(ActualModels.FrameworkUserCompletedSubTask);
+            userCompletedSubTask.SubTaskId = subTaskId;
+            userCompletedSubTask.UserId = userId;
+            userCompletedSubTask.AccomplishedTime = DateTime.Now;
+
+            await Context.AddAsync(userCompletedSubTask);
+            await Context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task RemoveAskForSubTask(int userId, int subTaskId)
+        {
+            var tryIfExists = await Context.Set<FrameworkUserAskedForSubTask>(ActualModels.FrameworkUserAskedForSubTask)
+                .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
+            if (tryIfExists != null)
+            {
+                Context.Remove(tryIfExists);
+                await Context.SaveChangesAsync();
+            }
+        }
+
+        public async Task RemoveCompletedSubTaskFromUser(int userId, int subTaskId)
+        {
+            var tryIfExists = await Context.Set<FrameworkUserCompletedSubTask>(ActualModels.FrameworkUserCompletedSubTask)
+                .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
+            if (tryIfExists != null)
+            {
+                Context.Remove(tryIfExists);
+                await Context.SaveChangesAsync();
             }
         }
     }

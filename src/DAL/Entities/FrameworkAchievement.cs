@@ -24,7 +24,7 @@ namespace DAL.Entities
 
     public byte[] Image { get; set; }
     
-    public virtual ICollection<FrameworkSubTask> SubTasks { get; set; }
+    public ICollection<FrameworkSubTask> SubTasks { get; set; }
 
     [Required]
     public FrameworkEvaluations Evaluation { get; set; }
@@ -36,17 +36,17 @@ namespace DAL.Entities
     [ForeignKey("Reward")]
     public int RewardId { get; set; }
     
-    public virtual FrameworkReward Reward { get; set; }
-    public virtual ICollection<FrameworkUserCompletedAchievements> UserCompletedAchievements { get; set; }
+    public FrameworkReward Reward { get; set; }
+    public ICollection<FrameworkUserCompletedAchievements> UserCompletedAchievements { get; set; }
     
     
-    public virtual ICollection<FrameworkUserAskedForReward> UserAskedForRewards { get; set; }
+    public ICollection<FrameworkUserAskedForReward> UserAskedForRewards { get; set; }
     [Required]
     [ForeignKey("AchievementGroup")]
     public int AchievementGroupId { get; set; }
     
-    public virtual FrameworkAchievementGroup AchievementGroup { get; set; }
+    public FrameworkAchievementGroup AchievementGroup { get; set; }
     
-    public virtual IEnumerable<FrameworkNotification> Notifications { get; set; }
+    public IEnumerable<FrameworkNotification> Notifications { get; set; }
     }
 }

@@ -18,21 +18,18 @@ namespace BusinessLayer.QueryObjects
         where TDto : DtoBase
     {
 
-        private AchievementFilterDto _filter;
-        
         public AchievementsQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper,
             actualTypes)
         {
         }
 
-        protected override void ApplyWhereClaus(AchievementFilterDto filter)
+        protected override void ApplyWhereClause(AchievementFilterDto filter)
         {
-            _filter = filter;
+            FilterByUserId(filter);
+            FilterGroupId(filter);
             FilterAchievementEvaluation(filter);
             FilterPeopleDoneCount(filter);
             FilterFulfillType(filter);
-            FilterByUserId(filter);
-            FilterGroupId(filter);
         }
 
 
@@ -47,14 +44,6 @@ namespace BusinessLayer.QueryObjects
 
         private IQueryable<int> GetIdsOfAchievementsIdsWhichHasSubTaskCompleted(AchievementFilterDto filter)
         {
-
-            if (filter.UserId != 0)
-            {
-                return Context
-                    .Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
-                    .Where(ucs => ucs.UserId == _filter.UserId)
-                    .Select(ucs => ucs.SubTask.AchievementId);
-            }
             return Context
                 .Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
                 .Select(ucs => ucs.SubTask.AchievementId);
@@ -62,14 +51,6 @@ namespace BusinessLayer.QueryObjects
 
         private IQueryable<int> GetIdsOfAchievementsIdsWhichIsCompleted(AchievementFilterDto filter)
         {
-            if (filter.UserId != 0)
-            {
-                return Context
-                    .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
-                    .Where(uca => uca.UserId == _filter.UserId)
-                    .Select(uca => uca.AchievementId);
-            }
-            
             return Context
                 .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
                 .Select(uca => uca.AchievementId);
@@ -128,7 +109,7 @@ namespace BusinessLayer.QueryObjects
 
         private void FilterFulfillType(AchievementFilterDto filter)
         {
-            if (filter.Type == null || filter.UserId == 0)
+            if (filter.Type == null)
             {
                 return;
             }

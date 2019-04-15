@@ -15,12 +15,11 @@ namespace BusinessLayer.DTOs.Base
         
         public int? CreatedByUserId { get; set; }
         
-        public virtual UserDto CreatedByUser { get; set; }
+        public UserDto CreatedByUser { get; set; }
 
         public bool WasShowed { get; set; }
         
         public AchievementDto Achievement { get;set; }
-        
-        public int AchievementId { get; set; }
+        public int? AchievementId { get; set; }
     }
 }

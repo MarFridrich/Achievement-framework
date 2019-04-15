@@ -13,6 +13,7 @@ using BusinessLayer.Services.Generic.Achievement;
 using BusinessLayer.Services.Generic.Notification;
 using BusinessLayer.Services.Generic.Reward;
 using BusinessLayer.Services.Generic.SubTask;
+using Castle.Core.Internal;
 using DAL.Entities;
 using DAL.Entities.JoinTables;
 using Microsoft.AspNetCore.Http;
@@ -102,7 +103,8 @@ namespace BusinessLayer.Facades
             {
                 return 0;
             }
-            
+
+            achievement.RewardId = rewardId;
             return await AchievementService.Create(achievement);
         }
         

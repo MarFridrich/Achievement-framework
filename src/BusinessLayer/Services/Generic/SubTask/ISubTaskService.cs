@@ -20,5 +20,13 @@ namespace BusinessLayer.Services.Generic.SubTask
         Task Delete(int id);
 
         Task RemoveSubTasksFromAchievement(int achievementId);
+
+        Task<bool> AskForSubTaskByUser(int userId, int subTaskId);
+
+        Task<bool> ApproveSubTaskToUser(int userId, int subTaskId);
+
+        Task RemoveAskForSubTask(int userId, int subTaskId);
+
+        Task RemoveCompletedSubTaskFromUser(int userId, int subTaskId);
     }
 }

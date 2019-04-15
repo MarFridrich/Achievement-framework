@@ -12,187 +12,244 @@ using BusinessLayer.QueryObjects.Base;
 using BusinessLayer.QueryObjects.Base.Results;
 using DAL.Entities;
 using DAL.Entities.JoinTables;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BusinessLayer.QueryObjects
 {
-    public class UserQuery<TUserDto> : QueryBase<FrameworkUser, TUserDto, UserFilterDto>
+    public class UserQuery<TUserDto, TFilter> : QueryBase<FrameworkUser, TUserDto, TFilter>
         where TUserDto : UserDto
+        where TFilter : UserFilterDto
     {
+        
+        private IList<int> _completedAchievementsIds { get; set; }
+        private IList<int> _askedAchievementsIds { get; set; }
+        
+        private IList<int> _completedSubTasksIds { get; set; }
+
+        private TFilter _filter { get; set; }
+
+
         public UserQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper, actualTypes)
         {
         }
 
+        private IList<int> GetIdsOfCompletedAchievements()
+        {
+            if (_filter.AchievementId != 0)
+            {
+                return Context
+                    .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
+                    .Where(uc => uc.AchievementId == _filter.AchievementId)
+                    .Select(uca => uca.UserId)
+                    .ToList();
+            }
 
-        private IQueryable<FrameworkUser> FilterUsersAchievementId(IQueryable<FrameworkUser> queryable, UserFilterDto filter)
+            if (_filter.GroupId != 0)
+            {
+                return Context
+                    .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
+                    .Where(uc => uc.Achievement.AchievementGroupId == _filter.GroupId)
+                    .Select(uca => uca.UserId)
+                    .ToList();
+            }
+            
+            return Context
+                .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
+                .Select(uca => uca.UserId)
+                .ToList();
+        }
+        
+        private IList<int> GetIdsOfAskedAchievements()
+        {
+            if (_filter.AchievementId != 0)
+            {
+                return Context
+                    .Set<FrameworkUserAskedForReward>(ActualTypes.FrameworkUserAskedForReward)
+                    .Where(uc => uc.AchievementId == _filter.AchievementId)
+                    .Select(uar => uar.UserId)
+                    .ToList();
+            }
+
+            if (_filter.GroupId != 0)
+            {
+                return Context
+                    .Set<FrameworkUserAskedForReward>(ActualTypes.FrameworkUserAskedForReward)
+                    .Where(uc => uc.Achievement.AchievementGroupId == _filter.GroupId)
+                    .Select(uar => uar.UserId)
+                    .ToList();
+            }
+            return Context
+                .Set<FrameworkUserAskedForReward>(ActualTypes.FrameworkUserAskedForReward)
+                .Select(uar => uar.UserId)
+                .ToList();
+        }
+
+        private IList<int> GetIdsOfCompletedSubTasks()
+        {
+            if (_filter.AchievementId != 0)
+            {
+                return  Context
+                    .Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
+                    .Where(uc => uc.SubTask.AchievementId == _filter.AchievementId)
+                    .Select(ucs => ucs.UserId)
+                    .ToList();
+            }
+
+            if (_filter.GroupId != 0)
+            {
+                return  Context
+                    .Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
+                    .Where(uc => uc.SubTask.Achievement.AchievementGroupId == _filter.GroupId)
+                    .Select(ucs => ucs.UserId)
+                    .ToList();
+            }
+            return  Context
+                .Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
+                .Select(ucs => ucs.UserId)
+                .ToList();
+        }
+        
+        private IList<int> GetIdsOfAskedUsers()
+        {
+            if (_filter.AchievementId != 0)
+            {
+                return Context
+                    .Set<FrameworkUserAskedForReward>(ActualTypes.FrameworkUserAskedForReward)
+                    .Where(ur => ur.AchievementId == _filter.AchievementId)
+                    .Select(uar => uar.UserId)
+                    .Concat(Context
+                    .Set<FrameworkUserAskedForSubTask>(ActualTypes.FrameworkUserAskedForSubTask)
+                    .Where(u => u.SubTask.AchievementId == _filter.AchievementId)
+                    .Select(uas => uas.UserId))
+                    .ToList();
+            }
+
+            if (_filter.GroupId != 0)
+            {
+                return  Context
+                    .Set<FrameworkUserAskedForReward>(ActualTypes.FrameworkUserAskedForReward)
+                    .Where(ur => ur.Achievement.AchievementGroupId == _filter.GroupId)
+                    .Select(uar => uar.UserId)
+                    .Concat(Context
+                        .Set<FrameworkUserAskedForSubTask>(ActualTypes.FrameworkUserAskedForSubTask)
+                        .Where(u => u.SubTask.Achievement.AchievementGroupId == _filter.GroupId)
+                        .Select(uas => uas.UserId))
+                    .ToList();
+            }
+            return  Context
+                .Set<FrameworkUserAskedForReward>(ActualTypes.FrameworkUserAskedForReward)
+                .Select(uar => uar.UserId)
+                .Concat(Context
+                    .Set<FrameworkUserAskedForSubTask>(ActualTypes.FrameworkUserAskedForSubTask)
+                    .Select(uas => uas.UserId))
+                .ToList();
+        }
+        
+        private void FilterUsersAchievementId(UserFilterDto filter)
         {
             if (filter.AchievementId == 0)
             {
-                return queryable;
+                return;
             }
-
-            return queryable
-                .Include(u => u.UserGroups)
-                .ThenInclude(ug => ug.AchievementGroup)
-                .ThenInclude(ag => ag.Achievements)
-                .Where(u => u.UserGroups
+            
+            Expression<Func<FrameworkUser, bool>> toAdd = u => u.UserGroups
                                 .SelectMany(ug => ug.AchievementGroup.Achievements)
-                                .FirstOrDefault(a => a.Id == filter.AchievementId) != null);
-        }
-
-        private IQueryable<FrameworkUser> FilterCompletedAchievements(IQueryable<FrameworkUser> queryable, UserFilterDto filter)
-        {
-            return queryable
-                .Join(Context.Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements),
-                    u => u.Id, uca => uca.UserId, (u, uca) => new {u, uca})
-                .Where(uuca => uuca.uca.Achievement.Id == filter.AchievementId)
-                .Select(uuca => uuca.u);
-        }
-
-        private IQueryable<FrameworkUser> FilterAskedForReward(IQueryable<FrameworkUser> queryable, UserFilterDto filter)
-        {
-            var userIds = Context
-                .Set<FrameworkUserAskedForReward>(ActualTypes.FrameworkUserAskedForReward)
-                .Where(uar => uar.AchievementId == filter.AchievementId)
-                .Select(uar => uar.UserId);
-
-            Expression<Func<FrameworkUser, bool>> toAdd = u => userIds.Contains(u.Id);
+                                .FirstOrDefault(a => a.Id == filter.AchievementId) != null;
             TmpPredicates.Add(toAdd);
-            return
-                queryable
-                    .Where(u => userIds.Contains(u.Id));
         }
 
-        private IQueryable<FrameworkUser> FilterNonCompletedAchievements(IQueryable<FrameworkUser> queryable)
+        private void FilterCompletedAchievements()
         {
-            var completedIds = Context
-                .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
-                .Select(uca => uca.UserId);
-            
-            Expression<Func<FrameworkUser, bool>> toAdd = u => !completedIds.Contains(u.Id);
+            Expression<Func<FrameworkUser, bool>> toAdd = u => _completedAchievementsIds.Contains(u.Id);
             TmpPredicates.Add(toAdd);
-            return queryable
-                .Where(u => !completedIds.Contains(u.Id));
+            //Expression<Func<FrameworkUser, bool>> tet = u => u.UserCompletedAchievements.Where(uc => uc.UserId == u.i);
+            //return queryable
+            //    .Join(Context.Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements),
+            //        u => u.Id, uca => uca.UserId, (u, uca) => new {u, uca})
+            //    .Where(uuca => uuca.uca.Achievement.Id == filter.AchievementId)
+            //    .Select(uuca => uuca.u);
         }
 
-        private IQueryable<FrameworkUser> FilterPartialDoneAchievements(IQueryable<FrameworkUser> queryable)
+        private void FilterAskedForReward()
         {
-            var completedIds = Context
-                .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
-                .Select(uca => uca.UserId);
-            var subTaskDoneIds = Context
-                .Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
-                .Select(ucs => ucs.UserId);
+
+            Expression<Func<FrameworkUser, bool>> toAdd = u => GetIdsOfAskedUsers().Contains(u.Id);
+            TmpPredicates.Add(toAdd);
+        }
+
+        private void FilterNonCompletedAchievements()
+        {
             
-            Expression<Func<FrameworkUser, bool>> toAdd = u => subTaskDoneIds.Except(completedIds)
+            Expression<Func<FrameworkUser, bool>> toAdd = u => !_completedAchievementsIds.Contains(u.Id);
+            TmpPredicates.Add(toAdd);
+        }
+
+        private void FilterPartialDoneAchievements()
+        {
+            Expression<Func<FrameworkUser, bool>> toAdd = u => _completedSubTasksIds.Except(_completedAchievementsIds)
                 .Distinct()
                 .Contains(u.Id);
             TmpPredicates.Add(toAdd);
-            return queryable
-                .Where(u => subTaskDoneIds.Except(completedIds)
-                    .Distinct()
-                    .Contains(u.Id));
         }
 
-        private IQueryable<FrameworkUser> FilterNotStartedAchievements(IQueryable<FrameworkUser> queryable, UserFilterDto filter)
+
+        private void FilterNotStartedAchievements()
         {
-            var completedIds = Context
-                .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
-                .Where(uca => uca.AchievementId == filter.AchievementId)
-                .Select(uca => uca.UserId);
-            var subTaskDoneIds = Context
-                .Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
-                .Where(ucs => ucs.SubTask.AchievementId == filter.AchievementId)
-                .Select(ucs => ucs.UserId);
-            var askedIds = Context
-                .Set<FrameworkUserAskedForReward>(ActualTypes.FrameworkUserAskedForReward)
-                .Where(uar => uar.AchievementId == filter.AchievementId)
-                .Select(uar => uar.UserId);
-            
-            Expression<Func<FrameworkUser, bool>> toAdd = u => !completedIds
-                .Union(subTaskDoneIds)
-                .Union(askedIds)
+            Expression<Func<FrameworkUser, bool>> toAdd = u => !_completedAchievementsIds
+                .Union(_completedSubTasksIds)
+                .Union(_askedAchievementsIds)
                 .Distinct()
                 .Contains(u.Id);
+           
             TmpPredicates.Add(toAdd);
-            
-            return queryable
-                .Where(u => !completedIds
-                    .Union(subTaskDoneIds)
-                    .Union(askedIds)
-                    .Distinct()
-                    .Contains(u.Id));
         }
 
-        private IQueryable<FrameworkUser> FilterGroupId(IQueryable<FrameworkUser> queryable, UserFilterDto filter)
+        private void FilterGroupId(UserFilterDto filter)
         {
+            if (filter.GroupId == 0)
+            {
+               return;
+            }
             
-            //Expression<Func<FrameworkUser, bool>> toAdd = u => 
-            //TmpPredicates.Add(toAdd);
-            
-            return
-                queryable
-                    .Include(u => u.UserGroups)
-                    .ThenInclude(ug => ug.AchievementGroup)
-                    .ThenInclude(ag => ag.Achievements)
-                    .Where(u => u.UserGroups.FirstOrDefault(ug => ug.AchievementGroup.Id == filter.GroupId) != null);
+            Expression<Func<FrameworkUser, bool>> toAdd = u =>
+                u.UserGroups.FirstOrDefault(ug => ug.AchievementGroup.Id == filter.GroupId) != null;
+            TmpPredicates.Add(toAdd);
 
         }
 
-        protected override void ApplyWhereClaus(UserFilterDto filter)
+        private void FilterFulfillType(UserFilterDto filter)
         {
-            throw new System.NotImplementedException();
+            if (!filter.AchievementFulfillType.HasValue || filter.AchievementId == 0) return;
+            switch (filter.AchievementFulfillType)
+            {
+                case UserFulfillType.Done:
+                    FilterCompletedAchievements();
+                    break;
+                case UserFulfillType.Partial
+                    :FilterPartialDoneAchievements();
+                    break;
+                case UserFulfillType.AskedForReward:
+                    FilterAskedForReward();
+                    break;
+                case UserFulfillType.Nothing:
+                    FilterNotStartedAchievements();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        public async Task<QueryResult<TUserDto>> UseFilter(UserFilterDto filter)
+        protected override void ApplyWhereClause(TFilter filter)
         {
-            var queryable = Context.Set<FrameworkUser>()
-                .AsQueryable();
-            
-            if (filter.AchievementId != 0)
-            {
-                queryable = FilterUsersAchievementId(queryable, filter);
-            }
-
-            if (filter.GroupId != 0)
-            {
-                queryable = FilterGroupId(queryable, filter);
-            }
-
-            if (filter.AchievementFulfillType.HasValue && filter.AchievementId != 0)
-            {
-                switch (filter.AchievementFulfillType)
-                {
-                    case UserFulfillType.Done:
-                        queryable = FilterCompletedAchievements(queryable, filter);
-                        break;
-                    case UserFulfillType.Partial:
-                        queryable = FilterPartialDoneAchievements(queryable);
-                        break;
-                    case UserFulfillType.AskedForReward:
-                        queryable = FilterAskedForReward(queryable, filter);
-                        break;
-                    case UserFulfillType.Nothing:
-                        queryable = FilterNotStartedAchievements(queryable, filter);
-                        break;
-                    case null:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                
-            }
-
-            queryable = filter.Includes.Aggregate(queryable, (current, include) => current.Include(include));
-            var itemsCount = queryable.Count();
-                
-            var list = await queryable.ToListAsync();
-            var mappedList = Mapper.Map<IList<TUserDto>>(list);
-
-            return new QueryResult<TUserDto>(mappedList, itemsCount, PageSize, filter.RequestedPageNumber);
-            
-            
+            _filter = filter;
+            _completedAchievementsIds = GetIdsOfCompletedAchievements();
+            _askedAchievementsIds = GetIdsOfAskedAchievements();
+            _completedSubTasksIds = GetIdsOfCompletedSubTasks();
+            FilterFulfillType(filter);
+            FilterGroupId(filter);
+            FilterUsersAchievementId(filter);
         }
     }
 }

@@ -78,6 +78,12 @@ namespace BusinessLayer.Services.Generic.AchievementGroup
 
         public async Task<bool> InsertUserIntoAchievementGroup(int userId, int groupId)
         {
+            var tryIfExists = Context.Set<FrameworkUserAchievementGroup>(ActualModels.FrameworkUserAchievementGroup)
+                .FirstOrDefault(uag => uag.UserId == userId && uag.AchievementGroupId == groupId);
+            if (tryIfExists != null)
+            {
+                return true;
+            }
             var userGroup = (FrameworkUserAchievementGroup)Activator.CreateInstance(ActualModels.FrameworkUserAchievementGroup);
             userGroup.UserId = userId;
             userGroup.AchievementGroupId = groupId;
@@ -120,5 +126,10 @@ namespace BusinessLayer.Services.Generic.AchievementGroup
             return Mapper.Map<IEnumerable<TUserDto>>(group.UserAchievementGroups.Select(uag => uag.User));
         }
 
+        public async Task<bool> IsExpired(int groupId)
+        {
+            var group = await Get(groupId);
+            return group.ExpiredIn < DateTime.Now;
+        }
     }
 }

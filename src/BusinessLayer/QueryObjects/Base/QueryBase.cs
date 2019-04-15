@@ -45,25 +45,17 @@ namespace BusinessLayer.QueryObjects.Base
             _realModel = actualTypes.GetActualTypeForUsage(typeof(TEntity));
         }
 
-        protected abstract void ApplyWhereClaus(TFilter filter);
+        protected abstract void ApplyWhereClause(TFilter filter);
         private void CombineTmpPredicatesToOne()
         {
             
             foreach (var predicate in TmpPredicates)
             {
-                if (Predicate != null)
-                {
-                    var tmp = Predicate;
-                    Predicate = x => tmp.Invoke(x) && predicate.Invoke(x);
-                }
-                else
-                {
-                    Predicate = predicate;
-                }
+                Predicate = Predicate != null ? Predicate.And(predicate) : predicate;
             }
         }
 
-        private void CheckPagingSizes(TFilter filter)
+        private static void CheckPagingSizes(TFilter filter)
         {
             if (filter.RequestedPageNumber.HasValue && filter.RequestedPageNumber < 1)
             {
@@ -82,25 +74,32 @@ namespace BusinessLayer.QueryObjects.Base
         private void SetVariablesFromFilter(TFilter filter)
         {
             OrderBy = filter.SortCriteria;
-            OrderByDescending = filter.SortAscending;
+            OrderByDescending = !filter.SortAscending;
         }
         public async Task<QueryResult<TDto>> ExecuteAsync(TFilter filter)
         {
             
             ClearPredicates();
             SetVariablesFromFilter(filter);
-            ApplyWhereClaus(filter);
+            ApplyWhereClause(filter);
             CombineTmpPredicatesToOne();
             var queryable = Context.Set<TEntity>(_realModel);
 
             queryable = filter.Includes.Aggregate(queryable, (current, include) => current.Include(include));
-
             if (Predicate != null)
             {
                 queryable = queryable.Where(Predicate);
             }
 
             var itemsCount = queryable.Count();
+            
+            if (!string.IsNullOrWhiteSpace(OrderBy))
+            {
+                queryable = OrderByDescending
+                    ? queryable.OrderByDescending(OrderBy)
+                    : queryable.OrderBy(OrderBy);
+            }
+            
             if (filter.RequestedPageNumber.HasValue)
             {
                 CheckPagingSizes(filter);
@@ -112,13 +111,6 @@ namespace BusinessLayer.QueryObjects.Base
                 queryable = queryable.Skip(PageSize * (filter.RequestedPageNumber.Value - 1)).Take(PageSize);
             }
     
-            if (!string.IsNullOrWhiteSpace(OrderBy))
-            {
-                queryable = OrderByDescending
-                    ? queryable.OrderByDescending(OrderBy)
-                    : queryable.OrderBy(OrderBy);
-            }
-
             var list = await queryable.ToListAsync();
             var mappedList = Mapper.Map<IList<TDto>>(list);
 

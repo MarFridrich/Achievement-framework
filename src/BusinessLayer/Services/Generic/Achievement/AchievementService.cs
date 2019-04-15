@@ -214,15 +214,16 @@ namespace BusinessLayer.Services.Generic.Achievement
             return true;
         }
 
-        public async Task ApproveAchievementToUser(int userId, int achievementId)
+        public async Task<bool> ApproveAchievementToUser(int userId, int achievementId)
         {
-            var userAskedForReward =
-                (FrameworkUserAskedForReward) Activator.CreateInstance(ActualModels.FrameworkUserAskedForReward);
-            userAskedForReward.UserId = userId;
-            userAskedForReward.AchievementId = achievementId;
-            Context
-                .Remove(userAskedForReward);
-
+            var tryIfExists = Context
+                .Set<FrameworkUserCompletedAchievements>(ActualModels.FrameworkUserCompletedAchievements)
+                .FirstOrDefault(uca => uca.AchievementId == achievementId && uca.UserId == userId);
+            if (tryIfExists != null)
+            {
+                return false;
+            }
+            
             var userCompletedAchievement =
                 (FrameworkUserCompletedAchievements) Activator.CreateInstance(ActualModels.FrameworkUserCompletedAchievements);
 
@@ -232,19 +233,20 @@ namespace BusinessLayer.Services.Generic.Achievement
 
             await Context.AddAsync(userCompletedAchievement);
             await Context.SaveChangesAsync();
+            return true;
 
         }
 
         public async Task RemoveReward(int userId, int achievementId)
         {
-            var userCompletedAchievement =
-                (FrameworkUserCompletedAchievements) Activator.CreateInstance(ActualModels.FrameworkUserCompletedAchievements);
-
-            userCompletedAchievement.UserId = userId;
-            userCompletedAchievement.AchievementId = achievementId;
-            Context.Remove(userCompletedAchievement);
-            await Context.SaveChangesAsync();
-
+            var tryIfExists = await Context.Set<FrameworkUserCompletedAchievements>()
+                .Where(uca => uca.UserId == userId && uca.AchievementId == achievementId)
+                .FirstOrDefaultAsync();
+            if (tryIfExists != null)
+            {
+                Context.Remove(tryIfExists);
+                await Context.SaveChangesAsync();
+            }
         }
 
         public async Task<string> ExportGroupAchievementsToJson(int groupId)
@@ -260,7 +262,6 @@ namespace BusinessLayer.Services.Generic.Achievement
 
         public async Task ImportAchievementsFromFileAndAddToGroup(Stream file, int groupId)
         {
-            var group = await AchievementGroupRepository.Get(groupId);
             using (var reader = new StreamReader(file))
             {
                 var all = await reader.ReadToEndAsync();
@@ -268,13 +269,42 @@ namespace BusinessLayer.Services.Generic.Achievement
                 foreach (var achievement in achievements)
                 {
                     var property = achievement.GetType().GetProperty("Reward", ActualModels.FrameworkReward);
-                    var reward = (FrameworkReward) property.GetValue(achievement);
+                    FrameworkReward reward;
+                    if (property.CanRead)
+                    {
+                        reward = (FrameworkReward) property.GetValue(achievement);
+                    }
+                    else
+                    {
+                        reward = achievement.Reward;
+                    }
+                    
                     var rewardId = await RewardRepository.Create(reward);
+                    var subTasksProperty = achievement.GetType().GetProperty("SubTasks",
+                        typeof(ICollection<>).MakeGenericType(ActualModels.FrameworkSubTask));
+                    ICollection subTasks;
+                    if (subTasksProperty.CanRead)
+                    {
+                        subTasks =  (ICollection) subTasksProperty.GetValue(achievement);
+                    }
+                    else
+                    {
+                        subTasks = (ICollection) achievement.SubTasks;
+                    }
+                   
                     achievement.RewardId = rewardId;
                     achievement.AchievementGroupId = groupId;
+                    var id = await Create(Mapper.Map<TAchievementDto>(achievement));
+                    foreach (var subTask in subTasks)
+                    {
+                        var casted = (FrameworkSubTask) subTask;
+                        casted.AchievementId = id;
+                        Context.Add(casted);
+                    }
+
+                    Context.SaveChanges();
                 }                  
-                Context.Set<TEntity>()
-                    .AddRange(achievements);
+                
             }
 
             await Context.SaveChangesAsync();

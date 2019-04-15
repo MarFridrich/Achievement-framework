@@ -20,7 +20,7 @@ namespace BusinessLayer.QueryObjects
         {
         }
 
-        protected override void ApplyWhereClaus(AchievementGroupFilterDto filter)
+        protected override void ApplyWhereClause(AchievementGroupFilterDto filter)
         {
             FilterGroupName(filter);
             FilterOwnerId(filter);

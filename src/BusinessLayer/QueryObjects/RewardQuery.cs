@@ -41,7 +41,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        protected override void ApplyWhereClaus(RewardFilterDto filter)
+        protected override void ApplyWhereClause(RewardFilterDto filter)
         {
             FilterName(filter);
             FilterAchievementId(filter);

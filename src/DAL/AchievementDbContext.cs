@@ -92,16 +92,6 @@ namespace DAL
                 .WithMany(uca => uca.UserCompletedAchievements)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            builder.Entity<FrameworkUserCompletedSubTask>()
-                .HasOne(ucs => ucs.SubTask)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
-            
-            builder.Entity<FrameworkUserCompletedSubTask>()
-                .HasOne(ucs => ucs.User)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
-            
             builder.Entity<FrameworkSubTask>()
                 .HasOne(s => s.Achievement)
                 .WithMany(a => a.SubTasks)
@@ -179,6 +169,17 @@ namespace DAL
                 .HasOne(uas => uas.SubTask)
                 .WithMany(s => s.UserAskedForSubTasks)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            
+            builder.Entity<FrameworkUserCompletedSubTask>()
+                .HasOne(uas => uas.SubTask)
+                .WithMany(s => s.UserCompletedSubTasks)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.Entity<FrameworkUserCompletedSubTask>()
+                .HasOne(uas => uas.User)
+                .WithMany(s => s.UserCompletedSubTasks)
+                .OnDelete(DeleteBehavior.Restrict);
             
             builder.Ignore<FrameworkExtensibleUser>();
 

@@ -74,7 +74,7 @@ namespace BusinessLayer.QueryObjects
             Expression<Func<TEntity, bool>> toAdd = g => g.Created < filter.OlderThen;
             TmpPredicates.Add(toAdd);
         }
-        protected override void ApplyWhereClaus(NotificationFilterDto filter)
+        protected override void ApplyWhereClause(NotificationFilterDto filter)
         {
             FilterUserId(filter);
             FilterShowedOnly(filter);

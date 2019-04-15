@@ -8,14 +8,15 @@ using BusinessLayer.Services.Generic.User;
 
 namespace BusinessLayer.Facades
 {
-    public class UserFacade<TUserDto, TAchievementGroupDto, TAchievementDto>
+    public class UserFacade<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto>
         where TUserDto : UserDto
         where TAchievementGroupDto : AchievementGroupDto
         where TAchievementDto : AchievementDto
+        where TFilterDto : UserFilterDto
     {
-        protected readonly IUserService<TUserDto, TAchievementGroupDto, TAchievementDto> UserService;
+        protected readonly IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto> UserService;
 
-        public UserFacade(IUserService<TUserDto, TAchievementGroupDto, TAchievementDto> userService)
+        public UserFacade(IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto> userService)
         {
             UserService = userService;
         }
@@ -50,7 +51,7 @@ namespace BusinessLayer.Facades
             await UserService.Delete(id);
         }
 
-        public async Task<QueryResult<TUserDto>> ApplyFilter(UserFilterDto filter)
+        public async Task<QueryResult<TUserDto>> ApplyFilter(TFilterDto filter)
         {
             return await UserService.ApplyFilter(filter);
         }

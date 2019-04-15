@@ -7,7 +7,7 @@ using BusinessLayer.QueryObjects.Base.Results;
 
 namespace BusinessLayer.Services.Generic.User
 {
-    public interface IUserService<TUserDto, TAchievementGroupDto, TAchievementDto>
+    public interface IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto>
         where TUserDto : UserDto
         where TAchievementGroupDto : AchievementGroupDto
         where TAchievementDto : AchievementDto
@@ -23,7 +23,7 @@ namespace BusinessLayer.Services.Generic.User
      
         Task Update(TUserDto entity);
 
-        Task<QueryResult<TUserDto>> ApplyFilter(UserFilterDto filter);
+        Task<QueryResult<TUserDto>> ApplyFilter(TFilterDto filter);
      
         Task Delete(int id);
 

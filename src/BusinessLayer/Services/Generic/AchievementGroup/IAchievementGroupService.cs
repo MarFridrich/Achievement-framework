@@ -46,5 +46,7 @@ namespace BusinessLayer.Services.Generic.AchievementGroup
 
         Task<IEnumerable<TUserDto>> GetUsersInAchievementGroup(int groupId);
 
+        Task<bool> IsExpired(int groupId);
+
     }
 }
