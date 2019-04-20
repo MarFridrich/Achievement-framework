@@ -1,19 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using BusinessLayer.DTOs.Common;
 using BusinessLayer.Helpers;
-using BusinessLayer.Services.Common;
-using DAL;
-using DAL.Entities;
-using DAL.Entities.Interfaces;
-using DAL.Entities.JoinTables;
+using DAL.BaHuEntities.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BusinessLayer.Repository
 {

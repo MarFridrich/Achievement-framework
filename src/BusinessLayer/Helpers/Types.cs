@@ -4,29 +4,29 @@ namespace BusinessLayer.Helpers
 {
     public class Types
     {
-        public Type FrameworkAchievement { get; }
+        public Type BaHuAchievement { get; }
 
-        public Type FrameworkAchievementGroup { get; }
+        public Type BaHuAchievementGroup { get; }
 
-        public Type FrameworkExtensibleUser { get; }
+        public Type BaHuExtensibleUser { get; }
 
-        public Type FrameworkNotification { get; }
+        public Type BaHuNotification { get; }
 
-        public Type FrameworkReward { get; }
+        public Type BaHuReward { get; }
 
-        public Type FrameworkRole { get; }
+        public Type BaHuRole { get; }
 
-        public Type FrameworkSubTask { get; }
+        public Type BaHuSubTask { get; }
 
-        public Type FrameworkUserAchievementGroup { get; }
+        public Type BaHUserAchievementGroup { get; }
 
-        public Type FrameworkUserAskedForReward { get; }
+        public Type BaHUserAskedForReward { get; }
 
-        public Type FrameworkUserCompletedAchievements { get; }
+        public Type BaHUserCompletedAchievements { get; }
         
-        public Type FrameworkUserCompletedSubTask { get; }
+        public Type BaHUserCompletedSubTask { get; }
         
-        public Type FrameworkUserAskedForSubTask { get; }
+        public Type BaHUserAskedForSubTask { get; }
 
 
         public Types(Type role, Type achievement, Type achievementGroup, Type reward, Type userAchievementGroup,
@@ -34,20 +34,20 @@ namespace BusinessLayer.Helpers
             Type userAskedReward,
             Type notification,
             Type subTask,
-            Type frameworkUserAskedForSubTask,
+            Type userAskedForSubTask,
             Type userCompletedSubTask)
         {
-            FrameworkRole = role;
-            FrameworkAchievement = achievement;
-            FrameworkAchievementGroup = achievementGroup;
-            FrameworkReward = reward;
-            FrameworkUserAchievementGroup = userAchievementGroup;
-            FrameworkUserCompletedAchievements = userCompletedAchievement;
-            FrameworkUserAskedForReward = userAskedReward;
-            FrameworkNotification = notification;
-            FrameworkSubTask = subTask;
-            FrameworkUserCompletedSubTask = userCompletedSubTask;
-            FrameworkUserAskedForSubTask = frameworkUserAskedForSubTask;
+            BaHuRole = role;
+            BaHuAchievement = achievement;
+            BaHuAchievementGroup = achievementGroup;
+            BaHuReward = reward;
+            BaHUserAchievementGroup = userAchievementGroup;
+            BaHUserCompletedAchievements = userCompletedAchievement;
+            BaHUserAskedForReward = userAskedReward;
+            BaHuNotification = notification;
+            BaHuSubTask = subTask;
+            BaHUserCompletedSubTask = userCompletedSubTask;
+            BaHUserAskedForSubTask = userAskedForSubTask;
         }
     }
 }

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.QueryObjects.Base.Results;
-using DAL.Entities.Interfaces;
+using DAL.BaHuEntities.Interfaces;
 
 namespace BusinessLayer.Services.Generic.Achievement
 {
     public interface IAchievementService<TEntity, TAchievementDto, TUserDto>
         where TEntity : class, IEntity
-        where TAchievementDto : AchievementDto
-        where TUserDto : UserDto
+        where TAchievementDto : BaHuAchievementDto
+        where TUserDto : BaHUserDto
     {
              IQueryable<TAchievementDto> ListAllAsync();
 

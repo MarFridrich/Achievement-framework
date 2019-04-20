@@ -5,13 +5,13 @@ using BusinessLayer.DTOs.Common;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base;
-using DAL.Entities;
+using DAL.BaHuEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
     public class NotificationQuery<TEntity, TDto> : QueryBase<TEntity, TDto, NotificationFilterDto>
-        where TEntity : FrameworkNotification, new()
+        where TEntity : BaHuNotification, new()
         where TDto : DtoBase
     {
         public NotificationQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper, actualTypes)

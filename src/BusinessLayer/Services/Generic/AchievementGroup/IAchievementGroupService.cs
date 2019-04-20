@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.QueryObjects.Base.Results;
-using DAL.Entities;
+using DAL.BaHuEntities;
 
 namespace BusinessLayer.Services.Generic.AchievementGroup
 {
     public interface IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto>
-        where TEntity : FrameworkAchievementGroup
-        where TAchievementGroupDto : AchievementGroupDto
-        where TUserDto : UserDto
+        where TEntity : BaHuAchievementGroup
+        where TAchievementGroupDto : BaHuAchievementGroupDto
+        where TUserDto : BaHUserDto
     {
         
         IQueryable<TAchievementGroupDto> ListAllAsync();

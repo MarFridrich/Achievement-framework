@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects;
-using BusinessLayer.QueryObjects.Base;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
 using BusinessLayer.Services.Common;
-using DAL;
-using DAL.Entities;
+using DAL.BaHuEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.Reward
@@ -19,14 +15,14 @@ namespace BusinessLayer.Services.Generic.Reward
     public class RewardService<TEntity, TRewardDto> :
         RepositoryServiceBase<TEntity, TRewardDto, RewardFilterDto>, IRewardService<TEntity, TRewardDto>
         
-        where TRewardDto : RewardDto
-        where TEntity : FrameworkReward, new()
+        where TRewardDto : BaHuRewardDto
+        where TEntity : BaHuReward, new()
     {
-        private readonly IRepository<FrameworkAchievement> _achievementRepository;
+        private readonly IRepository<BaHuAchievement> _achievementRepository;
         protected readonly RewardQuery<TEntity, TRewardDto> Query;
 
         public RewardService(IMapper mapper, IRepository<TEntity> repository, DbContext context, Types actualModels,
-            IRepository<FrameworkAchievement> achievementRepository,
+            IRepository<BaHuAchievement> achievementRepository,
             RewardQuery<TEntity, TRewardDto> query) 
             : base(mapper,
             repository,

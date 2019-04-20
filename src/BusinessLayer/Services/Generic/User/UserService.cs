@@ -6,31 +6,29 @@ using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects;
-using BusinessLayer.QueryObjects.Base;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
 using BusinessLayer.Services.Common;
-using DAL;
-using DAL.Entities;
+using DAL.BaHuEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.User
 {
     public class UserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto> :
-        RepositoryServiceBase<FrameworkUser, TUserDto, UserFilterDto>,
+        RepositoryServiceBase<BaHUser, TUserDto, UserFilterDto>,
         IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto>
-        where TUserDto : UserDto
-        where TAchievementGroupDto : AchievementGroupDto
-        where TAchievementDto : AchievementDto
+        where TUserDto : BaHUserDto
+        where TAchievementGroupDto : BaHuAchievementGroupDto
+        where TAchievementDto : BaHuAchievementDto
         where TFilterDto : UserFilterDto
 
     {
-        private readonly IRepository<FrameworkAchievementGroup> _achievementGroupRepository;
+        private readonly IRepository<BaHuAchievementGroup> _achievementGroupRepository;
         private readonly UserQuery<TUserDto, TFilterDto> _userQuery;
 
 
-        public UserService(IMapper mapper, IRepository<FrameworkUser> repository, DbContext context, Types actualModels,
-            IRepository<FrameworkAchievementGroup> achievementGroupRepository, UserQuery<TUserDto, TFilterDto> userQuery) : base(mapper, repository, context,
+        public UserService(IMapper mapper, IRepository<BaHUser> repository, DbContext context, Types actualModels,
+            IRepository<BaHuAchievementGroup> achievementGroupRepository, UserQuery<TUserDto, TFilterDto> userQuery) : base(mapper, repository, context,
             actualModels)
         {
             _achievementGroupRepository = achievementGroupRepository;

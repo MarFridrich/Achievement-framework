@@ -3,13 +3,13 @@ using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Services.Generic.Reward;
-using DAL.Entities.Interfaces;
+using DAL.BaHuEntities.Interfaces;
 
 namespace BusinessLayer.Facades
 {
     public class RewardFacade<TEntity, TRewardDto>
         where TEntity : IEntity
-        where TRewardDto : RewardDto
+        where TRewardDto : BaHuRewardDto
     {
         protected IRewardService<TEntity, TRewardDto> RewardService;
 

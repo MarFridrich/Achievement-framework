@@ -10,8 +10,7 @@ using BusinessLayer.QueryObjects.Base;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
 using BusinessLayer.Services.Common;
-using DAL;
-using DAL.Entities;
+using DAL.BaHuEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.Notification
@@ -19,18 +18,18 @@ namespace BusinessLayer.Services.Generic.Notification
     public class NotificationService<TNotification, TNotificationDto> :
         RepositoryServiceBase<TNotification, TNotificationDto, NotificationFilterDto>,
         INotificationService<TNotification, TNotificationDto>
-        where TNotificationDto : NotificationDto
-        where TNotification : FrameworkNotification, new()
+        where TNotificationDto : BaHuNotificationDto
+        where TNotification : BaHuNotification, new()
 
     {
 
-        protected readonly IRepository<FrameworkUser> UserRepository;
+        protected readonly IRepository<BaHUser> UserRepository;
         protected readonly QueryBase<TNotification, TNotificationDto, NotificationFilterDto> Query;
 
 
         public NotificationService(IMapper mapper, IRepository<TNotification> repository, DbContext context,
             Types actualModels, NotificationQuery<TNotification, TNotificationDto> query,
-            IRepository<FrameworkUser> userRepository) : base(mapper, repository, context, actualModels)
+            IRepository<BaHUser> userRepository) : base(mapper, repository, context, actualModels)
         {
             UserRepository = userRepository;
             Query = query;

@@ -7,14 +7,14 @@ using BusinessLayer.DTOs.Common;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.DTOs.Filter.Enums;
 using BusinessLayer.Helpers;
-using DAL.Entities;
-using DAL.Entities.JoinTables;
+using DAL.BaHuEntities;
+using DAL.BaHuEntities.JoinTables;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
     public class AchievementsQuery<TEntity, TDto> : QueryBase<TEntity, TDto, AchievementFilterDto>
-        where TEntity : FrameworkAchievement, new()
+        where TEntity : BaHuAchievement, new()
         where TDto : DtoBase
     {
 
@@ -45,14 +45,14 @@ namespace BusinessLayer.QueryObjects
         private IQueryable<int> GetIdsOfAchievementsIdsWhichHasSubTaskCompleted(AchievementFilterDto filter)
         {
             return Context
-                .Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask)
+                .Set<BaHUserCompletedSubTask>(ActualTypes.BaHUserCompletedSubTask)
                 .Select(ucs => ucs.SubTask.AchievementId);
         }
 
         private IQueryable<int> GetIdsOfAchievementsIdsWhichIsCompleted(AchievementFilterDto filter)
         {
             return Context
-                .Set<FrameworkUserCompletedAchievements>(ActualTypes.FrameworkUserCompletedAchievements)
+                .Set<BaHUserCompletedAchievement>(ActualTypes.BaHUserCompletedAchievements)
                 .Select(uca => uca.AchievementId);
         }
 
@@ -91,7 +91,7 @@ namespace BusinessLayer.QueryObjects
             }
 
             Expression<Func<TEntity, bool>> toAdd = ach =>
-                ach.Evaluation == (FrameworkEvaluations) filter.EvaluationType;
+                ach.Evaluation == (BaHuEvaluations) filter.EvaluationType;
             TmpPredicates.Add(toAdd);
         }
 
@@ -140,7 +140,7 @@ namespace BusinessLayer.QueryObjects
                 return;
             }
 
-            var achievementsId = Context.Set<FrameworkUserAchievementGroup>(ActualTypes.FrameworkUserAchievementGroup)
+            var achievementsId = Context.Set<BaHUserAchievementGroup>(ActualTypes.BaHUserAchievementGroup)
                 .Where(uag => uag.UserId == filter.UserId)
                 .SelectMany(uag => uag.AchievementGroup.Achievements.Select(a => a.Id));
 

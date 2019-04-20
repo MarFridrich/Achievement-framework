@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.Services.Generic.SubTask;
-using DAL.Entities;
+using DAL.BaHuEntities;
 
 namespace BusinessLayer.Facades
 {
     public class SubTaskFacade<TEntity, TDto>
-        where TEntity : FrameworkSubTask
-        where TDto : SubTaskDto
+        where TEntity : BaHuSubTask
+        where TDto : BaHuSubTaskDto
     {
         protected ISubTaskService<TEntity, TDto> SubTaskService;
 

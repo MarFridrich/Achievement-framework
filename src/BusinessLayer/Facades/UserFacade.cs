@@ -9,9 +9,9 @@ using BusinessLayer.Services.Generic.User;
 namespace BusinessLayer.Facades
 {
     public class UserFacade<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto>
-        where TUserDto : UserDto
-        where TAchievementGroupDto : AchievementGroupDto
-        where TAchievementDto : AchievementDto
+        where TUserDto : BaHUserDto
+        where TAchievementGroupDto : BaHuAchievementGroupDto
+        where TAchievementDto : BaHuAchievementDto
         where TFilterDto : UserFilterDto
     {
         protected readonly IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto> UserService;

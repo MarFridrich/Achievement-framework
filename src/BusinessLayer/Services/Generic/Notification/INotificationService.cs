@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.QueryObjects.Base.Results;
-using DAL.Entities.Interfaces;
+using DAL.BaHuEntities.Interfaces;
 
 namespace BusinessLayer.Services.Generic.Notification
 {
     public interface INotificationService<TNotification, TNotificationDto>
         where TNotification : IEntity, new()
-        where TNotificationDto : NotificationDto
+        where TNotificationDto : BaHuNotificationDto
     {
         IQueryable<TNotificationDto> ListAllAsync();
 

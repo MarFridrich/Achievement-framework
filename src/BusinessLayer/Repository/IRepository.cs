@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BusinessLayer.DTOs.Common;
-using DAL;
-using DAL.Entities.Interfaces;
+using DAL.BaHuEntities.Interfaces;
 
 namespace BusinessLayer.Repository
 {

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLayer.DTOs.Base;
@@ -9,16 +8,16 @@ using BusinessLayer.QueryObjects;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
 using BusinessLayer.Services.Common;
-using DAL.Entities;
-using DAL.Entities.JoinTables;
+using DAL.BaHuEntities;
+using DAL.BaHuEntities.JoinTables;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.SubTask
 {
     public class SubTaskService<TEntity, TSubTaskDto> :
         RepositoryServiceBase<TEntity, TSubTaskDto, SubTaskFilterDto>, ISubTaskService<TEntity, TSubTaskDto>
-        where TEntity : FrameworkSubTask
-        where TSubTaskDto : SubTaskDto
+        where TEntity : BaHuSubTask
+        where TSubTaskDto : BaHuSubTaskDto
     {
 
         protected SubTaskQuery<TEntity, TSubTaskDto> Query;
@@ -54,7 +53,7 @@ namespace BusinessLayer.Services.Generic.SubTask
         
         public async Task<bool> AskForSubTaskByUser(int userId, int subTaskId)
         {
-            var tryIfExists = await Context.Set<FrameworkUserAskedForSubTask>(ActualModels.FrameworkUserAskedForSubTask)
+            var tryIfExists = await Context.Set<BaHUserAskedForSubTask>(ActualModels.BaHUserAskedForSubTask)
                 .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
             if (tryIfExists != null)
             {
@@ -67,7 +66,7 @@ namespace BusinessLayer.Services.Generic.SubTask
             }
 
             var userAskedForSubTask =
-                (FrameworkUserAskedForSubTask) Activator.CreateInstance(ActualModels.FrameworkUserAskedForSubTask);
+                (BaHUserAskedForSubTask) Activator.CreateInstance(ActualModels.BaHUserAskedForSubTask);
             userAskedForSubTask.UserId = userId;
             userAskedForSubTask.SubTaskId = subTaskId;
             userAskedForSubTask.DateTime = DateTime.Now;
@@ -79,7 +78,7 @@ namespace BusinessLayer.Services.Generic.SubTask
 
         public async Task<bool> ApproveSubTaskToUser(int userId, int subTaskId)
         {
-            var tryIfExists = await Context.Set<FrameworkUserCompletedSubTask>(ActualModels.FrameworkUserCompletedSubTask)
+            var tryIfExists = await Context.Set<BaHUserCompletedSubTask>(ActualModels.BaHUserCompletedSubTask)
                 .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
             if (tryIfExists != null)
             {
@@ -92,7 +91,7 @@ namespace BusinessLayer.Services.Generic.SubTask
             }
             
             var userCompletedSubTask =
-                (FrameworkUserCompletedSubTask) Activator.CreateInstance(ActualModels.FrameworkUserCompletedSubTask);
+                (BaHUserCompletedSubTask) Activator.CreateInstance(ActualModels.BaHUserCompletedSubTask);
             userCompletedSubTask.SubTaskId = subTaskId;
             userCompletedSubTask.UserId = userId;
             userCompletedSubTask.AccomplishedTime = DateTime.Now;
@@ -104,7 +103,7 @@ namespace BusinessLayer.Services.Generic.SubTask
 
         public async Task RemoveAskForSubTask(int userId, int subTaskId)
         {
-            var tryIfExists = await Context.Set<FrameworkUserAskedForSubTask>(ActualModels.FrameworkUserAskedForSubTask)
+            var tryIfExists = await Context.Set<BaHUserAskedForSubTask>(ActualModels.BaHUserAskedForSubTask)
                 .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
             if (tryIfExists != null)
             {
@@ -115,7 +114,7 @@ namespace BusinessLayer.Services.Generic.SubTask
 
         public async Task RemoveCompletedSubTaskFromUser(int userId, int subTaskId)
         {
-            var tryIfExists = await Context.Set<FrameworkUserCompletedSubTask>(ActualModels.FrameworkUserCompletedSubTask)
+            var tryIfExists = await Context.Set<BaHUserCompletedSubTask>(ActualModels.BaHUserCompletedSubTask)
                 .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
             if (tryIfExists != null)
             {

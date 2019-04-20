@@ -8,9 +8,9 @@ using BusinessLayer.QueryObjects.Base.Results;
 namespace BusinessLayer.Services.Generic.User
 {
     public interface IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto>
-        where TUserDto : UserDto
-        where TAchievementGroupDto : AchievementGroupDto
-        where TAchievementDto : AchievementDto
+        where TUserDto : BaHUserDto
+        where TAchievementGroupDto : BaHuAchievementGroupDto
+        where TAchievementDto : BaHuAchievementDto
     {
         IQueryable<TUserDto> ListAllAsync();
 

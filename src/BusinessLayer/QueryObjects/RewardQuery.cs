@@ -6,15 +6,14 @@ using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base;
-using DAL.Entities;
-using DAL.Entities.Interfaces;
+using DAL.BaHuEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
     public class RewardQuery<TEntity, TDto> : QueryBase<TEntity, TDto, RewardFilterDto>
-        where TEntity : FrameworkReward
-        where TDto : RewardDto
+        where TEntity : BaHuReward
+        where TDto : BaHuRewardDto
     
     {
         public RewardQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper, actualTypes)

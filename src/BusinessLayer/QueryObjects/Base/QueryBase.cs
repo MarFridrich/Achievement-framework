@@ -7,7 +7,7 @@ using AutoMapper;
 using BusinessLayer.DTOs.Common;
 using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base.Results;
-using DAL.Entities.Interfaces;
+using DAL.BaHuEntities.Interfaces;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 

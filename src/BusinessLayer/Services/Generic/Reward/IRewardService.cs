@@ -8,7 +8,7 @@ using BusinessLayer.QueryObjects.Base.Results;
 namespace BusinessLayer.Services.Generic.Reward
 {
     public interface IRewardService<TEntity, TRewardDto>
-        where TRewardDto : RewardDto
+        where TRewardDto : BaHuRewardDto
     {
         IQueryable<TRewardDto> ListAllAsync();
         

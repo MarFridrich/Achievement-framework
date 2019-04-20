@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BusinessLayer.DTOs.Common;
 using BusinessLayer.Helpers;
-using BusinessLayer.QueryObjects.Base;
-using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
-using DAL;
-using DAL.Entities.Interfaces;
+using DAL.BaHuEntities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Common

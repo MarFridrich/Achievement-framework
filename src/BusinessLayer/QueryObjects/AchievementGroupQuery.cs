@@ -6,15 +6,15 @@ using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base;
-using DAL.Entities;
-using DAL.Entities.JoinTables;
+using DAL.BaHuEntities;
+using DAL.BaHuEntities.JoinTables;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
     public class AchievementGroupQuery<TEntity, TDto> : QueryBase<TEntity, TDto, AchievementGroupFilterDto>
-        where TEntity : FrameworkAchievementGroup
-        where TDto : AchievementGroupDto
+        where TEntity : BaHuAchievementGroup
+        where TDto : BaHuAchievementGroupDto
     {
         public AchievementGroupQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper, actualTypes)
         {
@@ -57,7 +57,7 @@ namespace BusinessLayer.QueryObjects
                 return;
             }
 
-            var groupIds = Context.Set<FrameworkUserAchievementGroup>(ActualTypes.FrameworkUserAchievementGroup)
+            var groupIds = Context.Set<BaHUserAchievementGroup>(ActualTypes.BaHUserAchievementGroup)
                 .Where(uag => uag.UserId == filter.UserId)
                 .Select(uag => uag.AchievementGroupId);
             

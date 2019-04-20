@@ -15,9 +15,9 @@ using BusinessLayer.QueryObjects.Base;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
 using BusinessLayer.Services.Common;
-using DAL.Entities;
-using DAL.Entities.Interfaces;
-using DAL.Entities.JoinTables;
+using DAL.BaHuEntities;
+using DAL.BaHuEntities.Interfaces;
+using DAL.BaHuEntities.JoinTables;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -25,30 +25,30 @@ namespace BusinessLayer.Services.Generic.Achievement
 {
     public class AchievementService<TEntity, TAchievementDto, TUserDto> :
         RepositoryServiceBase<TEntity, TAchievementDto, AchievementFilterDto>, IAchievementService<TEntity, TAchievementDto, TUserDto>
-        where TEntity : FrameworkAchievement, IEntity, new()
-        where TAchievementDto : AchievementDto
-        where TUserDto : UserDto
+        where TEntity : BaHuAchievement, IEntity, new()
+        where TAchievementDto : BaHuAchievementDto
+        where TUserDto : BaHUserDto
     {
 
-        protected readonly IRepository<FrameworkUser> UserRepository;
-        protected readonly IRepository<FrameworkAchievementGroup> AchievementGroupRepository;
-        protected readonly IRepository<FrameworkReward> RewardRepository;
+        protected readonly IRepository<BaHUser> UserRepository;
+        protected readonly IRepository<BaHuAchievementGroup> AchievementGroupRepository;
+        protected readonly IRepository<BaHuReward> RewardRepository;
         protected readonly QueryBase<TEntity, TAchievementDto, AchievementFilterDto> Query;
         
 
         private readonly string[] _navigationProperties = new[]
         {
-            nameof(FrameworkAchievement.AchievementGroup), nameof(FrameworkAchievement.UserCompletedAchievements),
-            nameof(FrameworkAchievement.Reward), nameof(FrameworkAchievement.Notifications),
-            nameof(FrameworkAchievement.SubTasks)
+            nameof(BaHuAchievement.AchievementGroup), nameof(BaHuAchievement.UserCompletedAchievements),
+            nameof(BaHuAchievement.Reward), nameof(BaHuAchievement.Notifications),
+            nameof(BaHuAchievement.SubTasks)
         };
         
         
         public AchievementService(IMapper mapper, IRepository<TEntity> repository, DbContext context,
             Types actualModels, AchievementsQuery<TEntity, TAchievementDto> query,
-            IRepository<FrameworkUser> userRepository,
-            IRepository<FrameworkAchievementGroup> achievementGroupRepository,
-            IRepository<FrameworkReward> rewardRepository) : base(mapper, repository, context, actualModels)
+            IRepository<BaHUser> userRepository,
+            IRepository<BaHuAchievementGroup> achievementGroupRepository,
+            IRepository<BaHuReward> rewardRepository) : base(mapper, repository, context, actualModels)
         {
             UserRepository = userRepository;
             AchievementGroupRepository = achievementGroupRepository;
@@ -59,7 +59,7 @@ namespace BusinessLayer.Services.Generic.Achievement
         public async Task<IEnumerable<TAchievementDto>> LoadAllNavigationProperties(IEnumerable<TAchievementDto> entities)
         {
            
-            var foundEntity = await Context.Set<FrameworkAchievement>(ActualModels.FrameworkAchievement)
+            var foundEntity = await Context.Set<BaHuAchievement>(ActualModels.BaHuAchievement)
                 .Where(ach => entities
                     .Select(e => e.Id)
                     .Contains(ach.Id))
@@ -69,7 +69,7 @@ namespace BusinessLayer.Services.Generic.Achievement
             {
                 foreach (var property in _navigationProperties)
                 {
-                    var test = typeof(FrameworkAchievement);
+                    var test = typeof(BaHuAchievement);
                     if (test.GetProperty(property).PropertyType.GetInterfaces().Contains(typeof(IEnumerable)))
                     {
                         Context.Entry(entity)
@@ -94,7 +94,7 @@ namespace BusinessLayer.Services.Generic.Achievement
         public async Task<List<TUserDto>> GetUserWhichCompletedAchievement(int achievementId)
         {
             var achievement = await Repository.Get(achievementId);
-            var test = Context.Set<FrameworkAchievement>()
+            var test = Context.Set<BaHuAchievement>()
                 .Include(ach => ach.UserCompletedAchievements);
             return achievement?
                 .UserCompletedAchievements
@@ -120,8 +120,8 @@ namespace BusinessLayer.Services.Generic.Achievement
 
         public async Task<TUserDto> GetAchievementGroupOwner(int achievementId)
         {
-            var achievement = await Repository.GetWithIncludes(achievementId, nameof(FrameworkAchievement.AchievementGroup),
-                nameof(FrameworkAchievement.AchievementGroup.Owner));
+            var achievement = await Repository.GetWithIncludes(achievementId, nameof(BaHuAchievement.AchievementGroup),
+                nameof(BaHuAchievement.AchievementGroup.Owner));
             return Mapper.Map<TUserDto>(achievement?
                 .AchievementGroup
                 .Owner);
@@ -158,9 +158,9 @@ namespace BusinessLayer.Services.Generic.Achievement
 
         public async Task<bool> CheckIfUserHasAchievement(int achievementId, int userId)
         {
-            var achievement = await Context.Set<FrameworkUserAchievementGroup>()
+            var achievement = await Context.Set<BaHUserAchievementGroup>()
                 .Where(uag => uag.UserId == userId)
-                .Join(Context.Set<FrameworkAchievement>(), uag => uag.AchievementGroupId, ach => ach.AchievementGroupId,
+                .Join(Context.Set<BaHuAchievement>(), uag => uag.AchievementGroupId, ach => ach.AchievementGroupId,
                     (_, ach) => ach)
                 .FirstOrDefaultAsync(ach => ach.Id == achievementId);
             return achievement != null;
@@ -168,15 +168,15 @@ namespace BusinessLayer.Services.Generic.Achievement
 
         public async Task<IEnumerable<ValueTuple<TUserDto, DateTime>>> GetUsersWhichAskedForReward(int achievementId)
         {
-            return await Context.Set<FrameworkUserAskedForReward>()
+            return await Context.Set<BaHUserAskedForReward>()
                 .Where(uar => uar.AchievementId == achievementId)
-                .Join(Context.Set<FrameworkUser>(), uar => uar.UserId, u => u.Id, (uar, u) => ValueTuple.Create(Mapper.Map<TUserDto>(u), uar.DateTime))
+                .Join(Context.Set<BaHUser>(), uar => uar.UserId, u => u.Id, (uar, u) => ValueTuple.Create(Mapper.Map<TUserDto>(u), uar.DateTime))
                 .ToListAsync();
         }
 
         public async Task<bool> AskForRewardByUser(int userId, int achievementId)
         {
-            var tryIfExists = await Context.Set<FrameworkUserAskedForReward>(ActualModels.FrameworkUserAskedForReward)
+            var tryIfExists = await Context.Set<BaHUserAskedForReward>(ActualModels.BaHUserAskedForReward)
                 .FirstOrDefaultAsync(uca => uca.AchievementId == achievementId && uca.UserId == userId);
             if (tryIfExists != null)
             {
@@ -189,7 +189,7 @@ namespace BusinessLayer.Services.Generic.Achievement
             }
 
             var userAskedForReward =
-                (FrameworkUserAskedForReward) Activator.CreateInstance(ActualModels.FrameworkUserAskedForReward);
+                (BaHUserAskedForReward) Activator.CreateInstance(ActualModels.BaHUserAskedForReward);
             userAskedForReward.UserId = userId;
             userAskedForReward.AchievementId = achievementId;
             userAskedForReward.DateTime = DateTime.Now;
@@ -202,7 +202,7 @@ namespace BusinessLayer.Services.Generic.Achievement
 
         public async Task<bool> RemoveAskForReward(int userId, int achievementId)
         {
-            var found = await Context.Set<FrameworkUserAskedForReward>(ActualModels.FrameworkUserAskedForReward)
+            var found = await Context.Set<BaHUserAskedForReward>(ActualModels.BaHUserAskedForReward)
                 .FirstOrDefaultAsync(uar => uar.AchievementId == achievementId && uar.UserId == userId);
             if (found == null)
             {
@@ -217,7 +217,7 @@ namespace BusinessLayer.Services.Generic.Achievement
         public async Task<bool> ApproveAchievementToUser(int userId, int achievementId)
         {
             var tryIfExists = Context
-                .Set<FrameworkUserCompletedAchievements>(ActualModels.FrameworkUserCompletedAchievements)
+                .Set<BaHUserCompletedAchievement>(ActualModels.BaHUserCompletedAchievements)
                 .FirstOrDefault(uca => uca.AchievementId == achievementId && uca.UserId == userId);
             if (tryIfExists != null)
             {
@@ -225,7 +225,7 @@ namespace BusinessLayer.Services.Generic.Achievement
             }
             
             var userCompletedAchievement =
-                (FrameworkUserCompletedAchievements) Activator.CreateInstance(ActualModels.FrameworkUserCompletedAchievements);
+                (BaHUserCompletedAchievement) Activator.CreateInstance(ActualModels.BaHUserCompletedAchievements);
 
             userCompletedAchievement.UserId = userId;
             userCompletedAchievement.AchievementId = achievementId;
@@ -239,7 +239,7 @@ namespace BusinessLayer.Services.Generic.Achievement
 
         public async Task RemoveReward(int userId, int achievementId)
         {
-            var tryIfExists = await Context.Set<FrameworkUserCompletedAchievements>()
+            var tryIfExists = await Context.Set<BaHUserCompletedAchievement>()
                 .Where(uca => uca.UserId == userId && uca.AchievementId == achievementId)
                 .FirstOrDefaultAsync();
             if (tryIfExists != null)
@@ -254,7 +254,7 @@ namespace BusinessLayer.Services.Generic.Achievement
             var achievements = await ApplyFilter(new AchievementFilterDto
             {
                 GroupId = groupId,
-                Includes = new []{ nameof(FrameworkAchievement.Reward), nameof(FrameworkAchievement.SubTasks)}
+                Includes = new []{ nameof(BaHuAchievement.Reward), nameof(BaHuAchievement.SubTasks)}
             });
             
             return JsonConvert.SerializeObject(achievements.Items);
@@ -268,11 +268,11 @@ namespace BusinessLayer.Services.Generic.Achievement
                 var achievements = JsonConvert.DeserializeObject<List<TEntity>>(all);
                 foreach (var achievement in achievements)
                 {
-                    var property = achievement.GetType().GetProperty("Reward", ActualModels.FrameworkReward);
-                    FrameworkReward reward;
+                    var property = achievement.GetType().GetProperty("Reward", ActualModels.BaHuReward);
+                    BaHuReward reward;
                     if (property.CanRead)
                     {
-                        reward = (FrameworkReward) property.GetValue(achievement);
+                        reward = (BaHuReward) property.GetValue(achievement);
                     }
                     else
                     {
@@ -281,7 +281,7 @@ namespace BusinessLayer.Services.Generic.Achievement
                     
                     var rewardId = await RewardRepository.Create(reward);
                     var subTasksProperty = achievement.GetType().GetProperty("SubTasks",
-                        typeof(ICollection<>).MakeGenericType(ActualModels.FrameworkSubTask));
+                        typeof(ICollection<>).MakeGenericType(ActualModels.BaHuSubTask));
                     ICollection subTasks;
                     if (subTasksProperty.CanRead)
                     {
@@ -297,7 +297,7 @@ namespace BusinessLayer.Services.Generic.Achievement
                     var id = await Create(Mapper.Map<TAchievementDto>(achievement));
                     foreach (var subTask in subTasks)
                     {
-                        var casted = (FrameworkSubTask) subTask;
+                        var casted = (BaHuSubTask) subTask;
                         casted.AchievementId = id;
                         Context.Add(casted);
                     }

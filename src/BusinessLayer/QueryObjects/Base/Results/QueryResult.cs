@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DAL.Entities;
 
 namespace BusinessLayer.QueryObjects.Base.Results
 {

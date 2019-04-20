@@ -3,7 +3,12 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
 <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-<LangVersion>latest</LangVersion> 
+<LangVersion>latest</LangVersion>
+<PackageId>BadgerHunter.DAL</PackageId>
+<Authors>Marek Fridrich</Authors>
+<Product>BadgerHunter</Product>
+<NeutralLanguage>en</NeutralLanguage>
+<PackageVersion>1.0.2</PackageVersion> 
     </PropertyGroup>
 
     <ItemGroup>

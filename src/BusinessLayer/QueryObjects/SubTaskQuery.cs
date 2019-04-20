@@ -7,16 +7,15 @@ using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.DTOs.Filter.Enums;
 using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base;
-using Castle.Core.Internal;
-using DAL.Entities;
-using DAL.Entities.JoinTables;
+using DAL.BaHuEntities;
+using DAL.BaHuEntities.JoinTables;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
     public class SubTaskQuery<TEntity, TSubTaskDto> : QueryBase<TEntity, TSubTaskDto, SubTaskFilterDto>
-        where TEntity : FrameworkSubTask
-        where TSubTaskDto : SubTaskDto
+        where TEntity : BaHuSubTask
+        where TSubTaskDto : BaHuSubTaskDto
     {
         private SubTaskFilterDto _filter { get; set; }
         
@@ -28,7 +27,7 @@ namespace BusinessLayer.QueryObjects
         private IQueryable<int> GetCompletedSubTasksIds()
         {
             var userCompletedSubTasks =
-                Context.Set<FrameworkUserCompletedSubTask>(ActualTypes.FrameworkUserCompletedSubTask);
+                Context.Set<BaHUserCompletedSubTask>(ActualTypes.BaHUserCompletedSubTask);
             if (_filter.UserId != 0)
             {
                 userCompletedSubTasks = userCompletedSubTasks.Where(ucs => ucs.UserId == _filter.UserId);
@@ -46,7 +45,7 @@ namespace BusinessLayer.QueryObjects
 
         private IQueryable<int> GetAskedForSubTasksIds()
         {
-            var askedForSubTask = Context.Set<FrameworkUserAskedForSubTask>(ActualTypes.FrameworkUserAskedForSubTask);
+            var askedForSubTask = Context.Set<BaHUserAskedForSubTask>(ActualTypes.BaHUserAskedForSubTask);
             if (_filter.UserId != 0)
             {
                 askedForSubTask = askedForSubTask.Where(uas => uas.UserId == _filter.UserId);
@@ -141,7 +140,7 @@ namespace BusinessLayer.QueryObjects
                 return;
             }
 
-            var ids = Context.Set<FrameworkUser>()
+            var ids = Context.Set<BaHUser>()
                 .SelectMany(u => u.UserGroups
                     .SelectMany(ug => ug.AchievementGroup.Achievements
                         .SelectMany(a => a.SubTasks

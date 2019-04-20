@@ -7,23 +7,23 @@ using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
 using BusinessLayer.Services.Generic.Achievement;
 using BusinessLayer.Services.Generic.AchievementGroup;
-using DAL.Entities;
+using DAL.BaHuEntities;
 
 namespace BusinessLayer.Facades
 {
     public class AchievementGroupFacade<TEntity, TAchievementGroupDto, TUserDto>
-        where TEntity : FrameworkAchievementGroup
-        where TAchievementGroupDto : AchievementGroupDto
-        where TUserDto : UserDto
+        where TEntity : BaHuAchievementGroup
+        where TAchievementGroupDto : BaHuAchievementGroupDto
+        where TUserDto : BaHUserDto
     {
         protected  readonly IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto>
             AchievementGroupService;
 
-        protected IAchievementService<FrameworkAchievement, AchievementDto, TUserDto> AchievementService;
-        protected IRepository<FrameworkSubTask> SubTaskRepository;
+        protected IAchievementService<BaHuAchievement, BaHuAchievementDto, TUserDto> AchievementService;
+        protected IRepository<BaHuSubTask> SubTaskRepository;
         public AchievementGroupFacade(
             IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto>
-                achievementGroupService, IAchievementService<FrameworkAchievement, AchievementDto, TUserDto> achievementService, IRepository<FrameworkSubTask> subTaskRepository)
+                achievementGroupService, IAchievementService<BaHuAchievement, BaHuAchievementDto, TUserDto> achievementService, IRepository<BaHuSubTask> subTaskRepository)
         {
             AchievementGroupService = achievementGroupService;
             AchievementService = achievementService;
@@ -65,7 +65,7 @@ namespace BusinessLayer.Facades
             await AchievementGroupService.Update(@group);
         }
 
-        private async Task DeleteSubTasks(ICollection<SubTaskDto> subTasks)
+        private async Task DeleteSubTasks(ICollection<BaHuSubTaskDto> subTasks)
         {
             foreach (var subTask in subTasks)
             {
@@ -78,7 +78,7 @@ namespace BusinessLayer.Facades
             var achievements = await AchievementService.ApplyFilter(new AchievementFilterDto
             {
                 GroupId = id,
-                Includes = new []{nameof(FrameworkAchievement.SubTasks)}
+                Includes = new []{nameof(BaHuAchievement.SubTasks)}
             });
             
             foreach (var achievement in achievements.Items)

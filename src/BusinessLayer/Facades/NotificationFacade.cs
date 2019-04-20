@@ -3,13 +3,13 @@ using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Services.Generic.Notification;
-using DAL.Entities;
+using DAL.BaHuEntities;
 
 namespace BusinessLayer.Facades
 {
     public class NotificationFacade<TEntity, TNotificationDto>
-        where TEntity : FrameworkNotification, new()
-        where TNotificationDto : NotificationDto
+        where TEntity : BaHuNotification, new()
+        where TNotificationDto : BaHuNotificationDto
     {
         protected INotificationService<TEntity, TNotificationDto> NotificationService;
 
@@ -18,7 +18,7 @@ namespace BusinessLayer.Facades
             NotificationService = notificationService;
         }
 
-        public async Task<NotificationDto> GetNotification(int id)
+        public async Task<BaHuNotificationDto> GetNotification(int id)
         {
             return await NotificationService.Get(id);
         }

@@ -3,40 +3,34 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
-using BusinessLayer.Config;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Repository;
 using BusinessLayer.Services.Generic.Achievement;
-using BusinessLayer.Services.Generic.Notification;
-using BusinessLayer.Services.Generic.Reward;
 using BusinessLayer.Services.Generic.SubTask;
-using Castle.Core.Internal;
-using DAL.Entities;
-using DAL.Entities.JoinTables;
-using Microsoft.AspNetCore.Http;
+using DAL.BaHuEntities;
 
 namespace BusinessLayer.Facades
 {
     public class AchievementFacade<TEntity, TAchievementDto, TUserDto, TRewardDto, TSubTask, TSubTaskDto>
-        where TEntity : FrameworkAchievement
-        where TAchievementDto : AchievementDto
-        where TUserDto : UserDto
-        where TRewardDto : RewardDto
-        where TSubTask : FrameworkSubTask
-        where TSubTaskDto : SubTaskDto
+        where TEntity : BaHuAchievement
+        where TAchievementDto : BaHuAchievementDto
+        where TUserDto : BaHUserDto
+        where TRewardDto : BaHuRewardDto
+        where TSubTask : BaHuSubTask
+        where TSubTaskDto : BaHuSubTaskDto
     {
         protected IAchievementService<TEntity, TAchievementDto, TUserDto> AchievementService;
         protected ISubTaskService<TSubTask, TSubTaskDto> SubTaskService;
-        protected readonly IRepository<FrameworkReward> RewardRepository;
-        protected readonly IRepository<FrameworkSubTask> SubTasksRepository;
+        protected readonly IRepository<BaHuReward> RewardRepository;
+        protected readonly IRepository<BaHuSubTask> SubTasksRepository;
         protected readonly Types ActualTypes;
         protected readonly IMapper Mapper;
 
-        public AchievementFacade(IAchievementService<TEntity, TAchievementDto, TUserDto> achievementService, IRepository<FrameworkReward> rewardRepository,
-            IMapper mapper, Types actualTypes, IRepository<FrameworkSubTask> subTasksRepository, ISubTaskService<TSubTask, TSubTaskDto> subTaskService)
+        public AchievementFacade(IAchievementService<TEntity, TAchievementDto, TUserDto> achievementService, IRepository<BaHuReward> rewardRepository,
+            IMapper mapper, Types actualTypes, IRepository<BaHuSubTask> subTasksRepository, ISubTaskService<TSubTask, TSubTaskDto> subTaskService)
         {
             AchievementService = achievementService;
             RewardRepository = rewardRepository;
@@ -98,7 +92,7 @@ namespace BusinessLayer.Facades
         {
             var rewardId =
                 await RewardRepository.Create(
-                    Mapper.Map(reward, typeof(TRewardDto), ActualTypes.FrameworkReward) as FrameworkReward);
+                    Mapper.Map(reward, typeof(TRewardDto), ActualTypes.BaHuReward) as BaHuReward);
             if (rewardId == 0)
             {
                 return 0;
@@ -112,7 +106,7 @@ namespace BusinessLayer.Facades
         {
             var rewardId =
                 await RewardRepository.Create(
-                    Mapper.Map(reward, typeof(TRewardDto), ActualTypes.FrameworkReward) as FrameworkReward);
+                    Mapper.Map(reward, typeof(TRewardDto), ActualTypes.BaHuReward) as BaHuReward);
             if (rewardId == 0)
             {
                 return 0;
@@ -122,8 +116,8 @@ namespace BusinessLayer.Facades
             foreach (var subTask in subTasks)
             {
                 subTask.AchievementId = achievementId;
-                await SubTasksRepository.Create((FrameworkSubTask) Mapper.Map(subTask, typeof(TSubTaskDto),
-                    ActualTypes.FrameworkSubTask));
+                await SubTasksRepository.Create((BaHuSubTask) Mapper.Map(subTask, typeof(TSubTaskDto),
+                    ActualTypes.BaHuSubTask));
             }
             return achievementId;
         }
