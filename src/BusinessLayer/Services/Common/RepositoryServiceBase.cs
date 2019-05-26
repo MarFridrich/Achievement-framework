@@ -20,7 +20,7 @@ namespace BusinessLayer.Services.Common
         protected readonly DbContext Context;
         protected readonly IRepository<TEntity> Repository;
         protected readonly Types ActualModels;
-        private readonly Type _actualType;
+        private readonly Type _actualModel;
         
 
         protected RepositoryServiceBase(IMapper mapper, IRepository<TEntity> repository, DbContext context,
@@ -30,23 +30,23 @@ namespace BusinessLayer.Services.Common
             Context = context;
             Repository = repository;
             ActualModels = actualModels;
-            _actualType = actualModels.GetActualTypeForUsage(typeof(TEntity));
+            _actualModel = actualModels.GetActualTypeForUsage(typeof(TEntity));
         }
 
         public virtual async Task<int> Create(TDto entity)
         {
-            return await Repository.Create((TEntity) Mapper.Map(entity, typeof(TDto), _actualType));
+            return await Repository.Create((TEntity) Mapper.Map(entity, typeof(TDto), _actualModel));
         }
 
         public virtual async Task CreateList(IEnumerable<TDto> entity)
         {
             await Repository.CreateRange((IEnumerable<TEntity>) Mapper.Map(entity, typeof(IEnumerable<TDto>),
-                typeof(IEnumerable<>).MakeGenericType(_actualType)));
+                typeof(IEnumerable<>).MakeGenericType(_actualModel)));
         }
 
         public virtual async Task Update(TDto entity)
         {
-            await Repository.Update((TEntity) Mapper.Map(entity, typeof(TDto), _actualType));
+            await Repository.Update((TEntity) Mapper.Map(entity, typeof(TDto), _actualModel));
         }
 
         public virtual async Task<TDto> Get(int id)
@@ -59,43 +59,11 @@ namespace BusinessLayer.Services.Common
             await Repository.Delete(id);
         }
 
-        public virtual IQueryable<TDto> ListAllAsync()
+        public virtual IQueryable<TDto> ListAll()
         {
             var list = Repository.ListAll();
             return list
                 .Select(e => Mapper.Map<TDto>(e));
-        }
-        
-        public async Task<TDto> LoadNavigationProperties(int id, IEnumerable<IEnumerable<string>> includes)
-        {
-            var entity = await Repository.Get(id);
-            if (entity == null)
-            {
-                return null;
-            }
-
-            foreach (var s in includes)
-            {
-                foreach (var include in s)
-                {
-                    var test = typeof(TEntity);
-                    if (test.GetProperty(include)?.PropertyType.GetInterfaces().Contains(typeof(IEnumerable)) != null)
-                    {
-                        await Context.Entry(entity)
-                            .Collection(include)
-                            .LoadAsync();
-                    }
-                    else
-                    {
-                        await Context.Entry(entity)
-                            .Reference(include)
-                            .LoadAsync();
-                    }
-                }
-                
-            }
-
-            return Mapper.Map<TDto>(entity);
         }
 
         public virtual async Task<TDto> GetWithIncludes(int id, params string[] includes)

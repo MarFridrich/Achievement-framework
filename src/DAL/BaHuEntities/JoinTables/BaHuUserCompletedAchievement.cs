@@ -7,20 +7,20 @@ namespace DAL.BaHuEntities.JoinTables
     /// <summary>
     /// Join table for achievements, which were accomplished by user.
     /// </summary>
-    public class BaHUserCompletedAchievement 
+    public class BaHuUserCompletedAchievement 
     {
         
         [Required]
         [ForeignKey("User")]
         public int UserId { get; set; }
         
-        public virtual BaHUser User { get; set; }
+        public User User { get; set; }
         
         [Required]
         [ForeignKey("Achievement")]
         public int AchievementId { get; set; }
         
-        public virtual BaHuAchievement Achievement { get; set; }
+        public BaHuAchievement Achievement { get; set; }
         
         [Required]
         public DateTime AccomplishDate { get; set; }

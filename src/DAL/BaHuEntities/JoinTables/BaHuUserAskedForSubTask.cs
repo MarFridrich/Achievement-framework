@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.BaHuEntities.JoinTables
 {
-    public class BaHUserAskedForSubTask
+    public class BaHuUserAskedForSubTask
     {
         [Required]
         [ForeignKey("User")]
         public int UserId { get; set; }
         
-        public BaHUser User { get; set; }
+        public User User { get; set; }
         
         [Required]
         [ForeignKey("SubTask")]

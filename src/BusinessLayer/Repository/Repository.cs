@@ -15,14 +15,12 @@ namespace BusinessLayer.Repository
 
         private readonly IMapper _mapper;
         private readonly DbContext _context;
-        private readonly Types _classTypes;
         private readonly Type _actualType;
 
         public Repository(IMapper mapper, DbContext context, Types classTypes)
         {
             _mapper = mapper;
             _context = context;
-            _classTypes = classTypes;
             _actualType = classTypes.GetActualTypeForUsage(typeof(TEntity));
         }
         public async Task<int> Create(TEntity entity)
@@ -60,6 +58,11 @@ namespace BusinessLayer.Repository
         public async Task Delete(int id)
         {
             var entity = await _context.FindAsync(_actualType, id);
+            if (entity == null)
+            {
+                return;
+                
+            }
             _context.Set<TEntity>().Remove((TEntity)entity);
             await _context.SaveChangesAsync();
         }

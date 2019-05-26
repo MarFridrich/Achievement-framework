@@ -7,12 +7,10 @@ using BusinessLayer.QueryObjects.Base.Results;
 
 namespace BusinessLayer.Services.Generic.User
 {
-    public interface IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto>
-        where TUserDto : BaHUserDto
-        where TAchievementGroupDto : BaHuAchievementGroupDto
-        where TAchievementDto : BaHuAchievementDto
+    public interface IUserService<TUserDto, TFilterDto>
+        where TUserDto : UserDto
     {
-        IQueryable<TUserDto> ListAllAsync();
+        IQueryable<TUserDto> ListAll();
 
         Task CreateList(IEnumerable<TUserDto> entity);
         Task<TUserDto> Get(int id);
@@ -26,11 +24,5 @@ namespace BusinessLayer.Services.Generic.User
         Task<QueryResult<TUserDto>> ApplyFilter(TFilterDto filter);
      
         Task Delete(int id);
-
-        Task<IEnumerable<TAchievementGroupDto>> GetAchievementGroupsForUser(int userId);
-        
-        Task<IEnumerable<TAchievementDto>> GetAchievementsForUser(int userId);
-
-        Task<IEnumerable<TUserDto>> GetUsersFromAchievementGroup(int groupId);
     }
 }

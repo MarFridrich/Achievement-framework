@@ -18,11 +18,10 @@ namespace BusinessLayer.Config
             CreateMap<BaHuRewardDto, BaHuReward>().ReverseMap();
             CreateMap<BaHuRoleDto, BaHuRole>().ReverseMap();
             CreateMap<BaHuSubTaskDto, BaHuSubTask>().ReverseMap();
-            CreateMap<BaHUserAchievementGroupDto, BaHUserAchievementGroup>().ReverseMap();
-            CreateMap<BaHUserCompletedAchievementDto, BaHUserCompletedAchievement>().ReverseMap();
-            CreateMap<BaHUserDto, BaHUser>().ReverseMap();
-            CreateMap<BaHUserHasGroupsDto, BaHUserHasGroupsDto>().ReverseMap();
-            CreateMap<BaHUserAskedForRewardDto, BaHUserAskedForReward>().ReverseMap();
+            CreateMap<BaHuUserAchievementGroupDto, BaHuUserAchievementGroup>().ReverseMap();
+            CreateMap<BaHuUserCompletedAchievementDto, BaHuUserCompletedAchievement>().ReverseMap();
+            CreateMap<UserDto, User>().ReverseMap();
+            CreateMap<BaHuUserAskedForRewardDto, BaHuUserAskedForReward>().ReverseMap();
 
             CreateMap(typeof(BaHuAchievementDto), types.BaHuAchievement).ReverseMap();
             CreateMap(typeof(BaHuAchievementGroupDto), types.BaHuAchievementGroup).ReverseMap();
@@ -30,12 +29,12 @@ namespace BusinessLayer.Config
             CreateMap(typeof(BaHuRewardDto), types.BaHuReward).ReverseMap();
             CreateMap(typeof(BaHuRoleDto), types.BaHuRole).ReverseMap();
             CreateMap(typeof(BaHuSubTaskDto), types.BaHuSubTask).ReverseMap();
-            CreateMap(typeof(BaHUserAchievementGroupDto), types.BaHUserAchievementGroup).ReverseMap();
-            CreateMap(typeof(BaHUserCompletedAchievementDto), types.BaHUserCompletedAchievements)
+            CreateMap(typeof(BaHuUserAchievementGroupDto), types.BaHuUserAchievementGroup).ReverseMap();
+            CreateMap(typeof(BaHuUserCompletedAchievementDto), types.BaHuUserCompletedAchievements)
                 .ReverseMap();
-            CreateMap(typeof(BaHUserAskedForRewardDto), types.BaHUserAskedForReward).ReverseMap();
-            CreateMap(typeof(BaHUserAskedForSubTaskDto), types.BaHUserAskedForSubTask).ReverseMap();
-            CreateMap(typeof(BaHUserCompletedSubTaskDto), types.BaHUserCompletedSubTask).ReverseMap();
+            CreateMap(typeof(BaHuUserAskedForRewardDto), types.BaHuUserAskedForReward).ReverseMap();
+            CreateMap(typeof(BaHuUserAskedForSubTaskDto), types.BaHuUserAskedForSubTask).ReverseMap();
+            CreateMap(typeof(BaHuUserCompletedSubTaskDto), types.BaHuUserCompletedSubTask).ReverseMap();
             
         }
     }

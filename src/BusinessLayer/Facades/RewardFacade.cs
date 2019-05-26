@@ -1,21 +1,29 @@
+using System.Linq;
 using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.QueryObjects.Base.Results;
 using BusinessLayer.Services.Generic.Reward;
+using DAL.BaHuEntities;
 using DAL.BaHuEntities.Interfaces;
 
 namespace BusinessLayer.Facades
 {
-    public class RewardFacade<TEntity, TRewardDto>
-        where TEntity : IEntity
+    public class RewardFacade<TEntity, TRewardDto, TRewardFilterDto>
+        where TEntity : BaHuReward, new()
         where TRewardDto : BaHuRewardDto
+        where TRewardFilterDto : RewardFilterDto, new() 
     {
-        protected IRewardService<TEntity, TRewardDto> RewardService;
+        protected IRewardService<TEntity, TRewardDto, TRewardFilterDto> RewardService;
 
-        public RewardFacade(IRewardService<TEntity, TRewardDto> rewardService)
+        public RewardFacade(IRewardService<TEntity, TRewardDto, TRewardFilterDto> rewardService)
         {
             RewardService = rewardService;
+        }
+
+        public IQueryable<TRewardDto> ListAll()
+        {
+            return RewardService.ListAll();
         }
 
         public async Task<TRewardDto> GetRewardById(int id)
@@ -43,9 +51,17 @@ namespace BusinessLayer.Facades
             return await RewardService.Create(dto);
         }
 
-        public async Task<QueryResult<TRewardDto>> ApplyFilter(RewardFilterDto filter)
+        public async Task<QueryResult<TRewardDto>> ApplyFilter(TRewardFilterDto filter)
         {
             return await RewardService.ApplyFilter(filter);
+        }
+
+        public async Task<QueryResult<TRewardDto>> GetRewardForAchievement(int id)
+        {
+            return await RewardService.ApplyFilter(new TRewardFilterDto
+            {
+                AchievementId = id
+            });
         }
     }
 }

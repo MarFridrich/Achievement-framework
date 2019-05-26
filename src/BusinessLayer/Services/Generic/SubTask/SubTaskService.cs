@@ -14,18 +14,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.SubTask
 {
-    public class SubTaskService<TEntity, TSubTaskDto> :
-        RepositoryServiceBase<TEntity, TSubTaskDto, SubTaskFilterDto>, ISubTaskService<TEntity, TSubTaskDto>
-        where TEntity : BaHuSubTask
+    public class SubTaskService<TEntity, TSubTaskDto, TFilterDto> :
+        RepositoryServiceBase<TEntity, TSubTaskDto, TFilterDto>, ISubTaskService<TEntity, TSubTaskDto, TFilterDto>
+        where TEntity : BaHuSubTask, new()
         where TSubTaskDto : BaHuSubTaskDto
+        where TFilterDto : SubTaskFilterDto, new()
     {
 
-        protected SubTaskQuery<TEntity, TSubTaskDto> Query;
+        protected SubTaskQuery<TEntity, TSubTaskDto, TFilterDto> Query;
         
         public SubTaskService(IMapper mapper,
             IRepository<TEntity> repository,
             DbContext context,
-            Types actualModels, SubTaskQuery<TEntity, TSubTaskDto> query) 
+            Types actualModels, SubTaskQuery<TEntity, TSubTaskDto, TFilterDto> query) 
             : base(mapper,
             repository,
             context,
@@ -34,14 +35,14 @@ namespace BusinessLayer.Services.Generic.SubTask
             Query = query;
         }
 
-        public async Task<QueryResult<TSubTaskDto>> ApplyFilter(SubTaskFilterDto filter)
+        public async Task<QueryResult<TSubTaskDto>> ApplyFilter(TFilterDto filter)
         {
             return await Query.ExecuteAsync(filter);
         }
 
         public async Task RemoveSubTasksFromAchievement(int achievementId)
         {
-            var subTasks = await ApplyFilter(new SubTaskFilterDto
+            var subTasks = await ApplyFilter(new TFilterDto
             {
                 AchievementId = achievementId
             });
@@ -53,7 +54,7 @@ namespace BusinessLayer.Services.Generic.SubTask
         
         public async Task<bool> AskForSubTaskByUser(int userId, int subTaskId)
         {
-            var tryIfExists = await Context.Set<BaHUserAskedForSubTask>(ActualModels.BaHUserAskedForSubTask)
+            var tryIfExists = await Context.Set<BaHuUserAskedForSubTask>(ActualModels.BaHuUserAskedForSubTask)
                 .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
             if (tryIfExists != null)
             {
@@ -66,7 +67,7 @@ namespace BusinessLayer.Services.Generic.SubTask
             }
 
             var userAskedForSubTask =
-                (BaHUserAskedForSubTask) Activator.CreateInstance(ActualModels.BaHUserAskedForSubTask);
+                (BaHuUserAskedForSubTask) Activator.CreateInstance(ActualModels.BaHuUserAskedForSubTask);
             userAskedForSubTask.UserId = userId;
             userAskedForSubTask.SubTaskId = subTaskId;
             userAskedForSubTask.DateTime = DateTime.Now;
@@ -78,7 +79,7 @@ namespace BusinessLayer.Services.Generic.SubTask
 
         public async Task<bool> ApproveSubTaskToUser(int userId, int subTaskId)
         {
-            var tryIfExists = await Context.Set<BaHUserCompletedSubTask>(ActualModels.BaHUserCompletedSubTask)
+            var tryIfExists = await Context.Set<BaHuUserCompletedSubTask>(ActualModels.BaHuUserCompletedSubTask)
                 .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
             if (tryIfExists != null)
             {
@@ -91,7 +92,7 @@ namespace BusinessLayer.Services.Generic.SubTask
             }
             
             var userCompletedSubTask =
-                (BaHUserCompletedSubTask) Activator.CreateInstance(ActualModels.BaHUserCompletedSubTask);
+                (BaHuUserCompletedSubTask) Activator.CreateInstance(ActualModels.BaHuUserCompletedSubTask);
             userCompletedSubTask.SubTaskId = subTaskId;
             userCompletedSubTask.UserId = userId;
             userCompletedSubTask.AccomplishedTime = DateTime.Now;
@@ -101,26 +102,28 @@ namespace BusinessLayer.Services.Generic.SubTask
             return true;
         }
 
-        public async Task RemoveAskForSubTask(int userId, int subTaskId)
+        public async Task<bool> RemoveAskForSubTask(int userId, int subTaskId)
         {
-            var tryIfExists = await Context.Set<BaHUserAskedForSubTask>(ActualModels.BaHUserAskedForSubTask)
+            var tryIfExists = await Context.Set<BaHuUserAskedForSubTask>(ActualModels.BaHuUserAskedForSubTask)
                 .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
-            if (tryIfExists != null)
-            {
-                Context.Remove(tryIfExists);
-                await Context.SaveChangesAsync();
-            }
+            if (tryIfExists == null) return false;
+            
+            Context.Remove(tryIfExists);
+            await Context.SaveChangesAsync();
+            return true;
+
         }
 
-        public async Task RemoveCompletedSubTaskFromUser(int userId, int subTaskId)
+        public async Task<bool> RemoveCompletedSubTaskFromUser(int userId, int subTaskId)
         {
-            var tryIfExists = await Context.Set<BaHUserCompletedSubTask>(ActualModels.BaHUserCompletedSubTask)
+            var tryIfExists = await Context.Set<BaHuUserCompletedSubTask>(ActualModels.BaHuUserCompletedSubTask)
                 .FirstOrDefaultAsync(ucs => ucs.SubTaskId == subTaskId && ucs.UserId == userId);
-            if (tryIfExists != null)
-            {
-                Context.Remove(tryIfExists);
-                await Context.SaveChangesAsync();
-            }
+            if (tryIfExists == null) return false;
+            
+            Context.Remove(tryIfExists);
+            await Context.SaveChangesAsync();
+            return true;
+
         }
     }
 }

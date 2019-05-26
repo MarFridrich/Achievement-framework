@@ -11,16 +11,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
-    public class RewardQuery<TEntity, TDto> : QueryBase<TEntity, TDto, RewardFilterDto>
+    public class RewardQuery<TEntity, TDto, TFilterDto> : QueryBase<TEntity, TDto, TFilterDto>
         where TEntity : BaHuReward
         where TDto : BaHuRewardDto
+        where TFilterDto : RewardFilterDto
     
     {
         public RewardQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper, actualTypes)
         {
         }
 
-        private void FilterName(RewardFilterDto filter)
+        private void FilterName(TFilterDto filter)
         {
             if (string.IsNullOrEmpty(filter.Name))
             {
@@ -30,17 +31,17 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
         
-        private void FilterAchievementId(RewardFilterDto filter)
+        private void FilterAchievementId(TFilterDto filter)
         {
             if (filter.AchievementId == 0)
             {
                 return;
             }
-            Expression<Func<TEntity, bool>> toAdd = r => r.Achievements.FirstOrDefault(a => a.Id == filter.AchievementId) != null;
+            Expression<Func<TEntity, bool>> toAdd = r => r.Achievements.Where(a => a.Id == filter.AchievementId) != null;
             TmpPredicates.Add(toAdd);
         }
 
-        protected override void ApplyWhereClause(RewardFilterDto filter)
+        protected override void ApplyWhereClause(TFilterDto filter)
         {
             FilterName(filter);
             FilterAchievementId(filter);

@@ -8,13 +8,13 @@ using DAL.BaHuEntities.Interfaces;
 
 namespace BusinessLayer.Services.Generic.Notification
 {
-    public interface INotificationService<TNotification, TNotificationDto>
+    public interface INotificationService<TNotification, TNotificationDto, TFilterDto>
         where TNotification : IEntity, new()
         where TNotificationDto : BaHuNotificationDto
     {
-        IQueryable<TNotificationDto> ListAllAsync();
+        IQueryable<TNotificationDto> ListAll();
 
-        Task<QueryResult<TNotificationDto>> ApplyFilter(NotificationFilterDto filter);
+        Task<QueryResult<TNotificationDto>> ApplyFilter(TFilterDto filter);
 
         Task CreateList(IEnumerable<TNotificationDto> entity);
      
@@ -27,8 +27,6 @@ namespace BusinessLayer.Services.Generic.Notification
         Task Update(TNotificationDto entity);
      
         Task Delete(int id);
-
-        Task<IEnumerable<TNotificationDto>> GetNotificationsForUser(int userId);
 
         Task MarkAsUnread(int id);
     }

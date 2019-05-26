@@ -10,16 +10,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
-    public class NotificationQuery<TEntity, TDto> : QueryBase<TEntity, TDto, NotificationFilterDto>
+    public class NotificationQuery<TEntity, TDto, TFilterDto> : QueryBase<TEntity, TDto, TFilterDto>
         where TEntity : BaHuNotification, new()
         where TDto : DtoBase
+        where TFilterDto : NotificationFilterDto
     {
+        
         public NotificationQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper, actualTypes)
         {
         }
 
 
-        private void FilterUserId(NotificationFilterDto filter)
+        private void FilterUserId(TFilterDto filter)
         {
             if (filter.UserId == 0)
             {
@@ -30,7 +32,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterShowedOnly(NotificationFilterDto filter)
+        private void FilterShowedOnly(TFilterDto filter)
         {
             if (filter.UnReadOnly == false)
             {
@@ -41,7 +43,7 @@ namespace BusinessLayer.QueryObjects
             
         }
 
-        private void FilterMessageString(NotificationFilterDto filter)
+        private void FilterMessageString(TFilterDto filter)
         {
             if (string.IsNullOrEmpty(filter.Message))
             {
@@ -52,7 +54,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterAchievementId(NotificationFilterDto filter)
+        private void FilterAchievementId(TFilterDto filter)
         {
             if (filter.AchievementId == 0)
             {
@@ -64,7 +66,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterDateTime(NotificationFilterDto filter)
+        private void FilterDateTime(TFilterDto filter)
         {
             if (filter.OlderThen == DateTime.MaxValue)
             {
@@ -74,7 +76,7 @@ namespace BusinessLayer.QueryObjects
             Expression<Func<TEntity, bool>> toAdd = g => g.Created < filter.OlderThen;
             TmpPredicates.Add(toAdd);
         }
-        protected override void ApplyWhereClause(NotificationFilterDto filter)
+        protected override void ApplyWhereClause(TFilterDto filter)
         {
             FilterUserId(filter);
             FilterShowedOnly(filter);

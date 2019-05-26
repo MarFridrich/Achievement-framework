@@ -19,9 +19,9 @@ namespace BusinessLayer.DTOs.Base
         public BaHuAchievement Achievement { get; set; }
         
         [JsonIgnore]
-        public ICollection<BaHUserAskedForSubTaskDto> UserAskedForSubTasks { get; set; }
+        public ICollection<BaHuUserAskedForSubTaskDto> UserAskedForSubTasks { get; set; }
         
         [JsonIgnore]
-        public ICollection<BaHUserCompletedSubTaskDto> UserCompletedSubTasks { get; set; }
+        public ICollection<BaHuUserCompletedSubTaskDto> UserCompletedSubTasks { get; set; }
     }
 }

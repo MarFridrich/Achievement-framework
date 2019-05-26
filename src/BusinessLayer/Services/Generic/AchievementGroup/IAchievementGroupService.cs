@@ -8,17 +8,17 @@ using DAL.BaHuEntities;
 
 namespace BusinessLayer.Services.Generic.AchievementGroup
 {
-    public interface IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto>
+    public interface IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto, TFilterDto>
         where TEntity : BaHuAchievementGroup
         where TAchievementGroupDto : BaHuAchievementGroupDto
-        where TUserDto : BaHUserDto
+        where TUserDto : UserDto
     {
         
-        IQueryable<TAchievementGroupDto> ListAllAsync();
+        IQueryable<TAchievementGroupDto> ListAll();
         
         Task CreateList(IEnumerable<TAchievementGroupDto> entity);
 
-        Task<QueryResult<TAchievementGroupDto>> ApplyFilter(AchievementGroupFilterDto filter);
+        Task<QueryResult<TAchievementGroupDto>> ApplyFilter(TFilterDto filter);
      
         Task<TAchievementGroupDto> Get(int id);
         
@@ -29,12 +29,6 @@ namespace BusinessLayer.Services.Generic.AchievementGroup
         Task Update(TAchievementGroupDto entity);
      
         Task Delete(int id);
-        
-        Task<TAchievementGroupDto> LoadNavigationProperties(int id, IEnumerable<IEnumerable<string>> includes);
-
-        Task<IEnumerable<TAchievementGroupDto>> GetAchievementsGroupsOfUserAsync(int userId);
-        
-        Task<IEnumerable<TAchievementGroupDto>> GetGroupsWhereUserIsAdminAsync(int userId);
 
         Task<bool> InsertUserIntoAchievementGroup(int userId, int groupId);
 

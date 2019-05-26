@@ -17,85 +17,63 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.AchievementGroup
 {
-    public class AchievementGroupService<TEntity, TAchievementGroupDto, TUserDto> :
-        RepositoryServiceBase<TEntity, TAchievementGroupDto, AchievementGroupFilterDto>,
-        IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto>
+    public class AchievementGroupService<TEntity, TAchievementGroupDto, TUserDto, TFilterDto> :
+        RepositoryServiceBase<TEntity, TAchievementGroupDto, TFilterDto>,
+        IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto, TFilterDto>
     
-        where TEntity : BaHuAchievementGroup
+        where TEntity : BaHuAchievementGroup, new()
         where TAchievementGroupDto : BaHuAchievementGroupDto
-        where TUserDto : BaHUserDto
+        where TUserDto : UserDto
+        where TFilterDto : AchievementGroupFilterDto, new()
     {
-        protected readonly QueryBase<TEntity, TAchievementGroupDto, AchievementGroupFilterDto> Query;
+        protected readonly QueryBase<TEntity, TAchievementGroupDto, TFilterDto> Query;
 
 
         public AchievementGroupService(IMapper mapper, IRepository<TEntity> repository, DbContext context,
-            Types actualModels, AchievementGroupQuery<TEntity, TAchievementGroupDto> query) : base(mapper,
+            Types actualModels, AchievementGroupQuery<TEntity, TAchievementGroupDto, TFilterDto> query) : base(mapper,
             repository,
             context, actualModels)
         {
             Query = query;
         }
 
-        public async Task<QueryResult<TAchievementGroupDto>> ApplyFilter(AchievementGroupFilterDto filter)
+        public async Task<QueryResult<TAchievementGroupDto>> ApplyFilter(TFilterDto filter)
         {
             return await Query.ExecuteAsync(filter);
         }
 
-        public async Task<IEnumerable<TAchievementGroupDto>> GetAchievementsGroupsOfUserAsync(int userId)
-        {
-            var user  = await Context
-                .Set<BaHUser>()
-                .Include(u => u.UserGroups)
-                .ThenInclude(ug => ug.AchievementGroup)
-                .ThenInclude(ag => ag.Achievements)
-                .ThenInclude(ach => ach.Reward)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-            
-            return user?
-                .UserGroups?
-                .Select(g => Mapper.Map<TAchievementGroupDto>(g.AchievementGroup))
-                .ToList();
-        }
-
-        public async Task<IEnumerable<TAchievementGroupDto>> GetGroupsWhereUserIsAdminAsync(int userId)
-        {
-            return await Context.Set<BaHuAchievementGroup>(ActualModels.BaHuAchievementGroup)
-                .Where(g => g.OwnerId == userId)
-                .Select(g => Mapper.Map<TAchievementGroupDto>(g))
-                .ToListAsync();
-        }
 
         public async Task<bool> InsertUserIntoAchievementGroup(int userId, int groupId)
         {
-            var tryIfExists = Context.Set<BaHUserAchievementGroup>(ActualModels.BaHUserAchievementGroup)
+            var tryIfExists = Context.Set<BaHuUserAchievementGroup>(ActualModels.BaHuUserAchievementGroup)
                 .FirstOrDefault(uag => uag.UserId == userId && uag.AchievementGroupId == groupId);
             if (tryIfExists != null)
             {
                 return true;
             }
-            var userGroup = (BaHUserAchievementGroup)Activator.CreateInstance(ActualModels.BaHUserAchievementGroup);
+            var userGroup = (BaHuUserAchievementGroup)Activator.CreateInstance(ActualModels.BaHuUserAchievementGroup);
             userGroup.UserId = userId;
             userGroup.AchievementGroupId = groupId;
-            await Context.AddAsync(Mapper.Map(userGroup, userGroup.GetType(), ActualModels.BaHUserAchievementGroup));
+            await Context.AddAsync(userGroup);
+            await Context.SaveChangesAsync();
             return true;
         }
 
         public async Task DeleteUserFromAchievementGroup(int userId, int groupId)
         {
-           var userGroup = await Context.Set<BaHUserAchievementGroup>()
+           var userGroup = await Context.Set<BaHuUserAchievementGroup>(ActualModels.BaHuUserAchievementGroup)
                .FirstOrDefaultAsync(g => g.AchievementGroupId == groupId && g.UserId == userId);
 
-           Context.Set<BaHUserAchievementGroup>()
+           Context.Set<BaHuUserAchievementGroup>()
                .Remove(userGroup);
            await Context.SaveChangesAsync();
         }
 
         public async Task DeleteAllUsersFromAchievementGroup(int groupId)
         {
-            var groups = Context.Set<BaHUserAchievementGroup>()
-                .Where(g => g.AchievementGroupId == groupId);
-            Context.Set<BaHUserAchievementGroup>()
-                .RemoveRange(groups);
+            Context.Set<BaHuUserAchievementGroup>(ActualModels.BaHuUserAchievementGroup)
+                .Where(g => g.AchievementGroupId == groupId)
+                .DeleteFromQuery();
             await Context.SaveChangesAsync();
         }
 

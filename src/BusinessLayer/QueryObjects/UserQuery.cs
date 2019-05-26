@@ -10,12 +10,13 @@ using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base;
 using DAL.BaHuEntities;
 using DAL.BaHuEntities.JoinTables;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
-    public class UserQuery<TUserDto, TFilter> : QueryBase<BaHUser, TUserDto, TFilter>
-        where TUserDto : BaHUserDto
+    public class UserQuery<TUserDto, TFilter> : QueryBase<User, TUserDto, TFilter>
+        where TUserDto : UserDto
         where TFilter : UserFilterDto
     {
         
@@ -37,7 +38,7 @@ namespace BusinessLayer.QueryObjects
             if (_filter.AchievementId != 0)
             {
                 return Context
-                    .Set<BaHUserCompletedAchievement>(ActualTypes.BaHUserCompletedAchievements)
+                    .Set<BaHuUserCompletedAchievement>(ActualTypes.BaHuUserCompletedAchievements)
                     .Where(uc => uc.AchievementId == _filter.AchievementId)
                     .Select(uca => uca.UserId)
                     .ToList();
@@ -46,14 +47,14 @@ namespace BusinessLayer.QueryObjects
             if (_filter.GroupId != 0)
             {
                 return Context
-                    .Set<BaHUserCompletedAchievement>(ActualTypes.BaHUserCompletedAchievements)
+                    .Set<BaHuUserCompletedAchievement>(ActualTypes.BaHuUserCompletedAchievements)
                     .Where(uc => uc.Achievement.AchievementGroupId == _filter.GroupId)
                     .Select(uca => uca.UserId)
                     .ToList();
             }
             
             return Context
-                .Set<BaHUserCompletedAchievement>(ActualTypes.BaHUserCompletedAchievements)
+                .Set<BaHuUserCompletedAchievement>(ActualTypes.BaHuUserCompletedAchievements)
                 .Select(uca => uca.UserId)
                 .ToList();
         }
@@ -63,7 +64,7 @@ namespace BusinessLayer.QueryObjects
             if (_filter.AchievementId != 0)
             {
                 return Context
-                    .Set<BaHUserAskedForReward>(ActualTypes.BaHUserAskedForReward)
+                    .Set<BaHuUserAskedForReward>(ActualTypes.BaHuUserAskedForReward)
                     .Where(uc => uc.AchievementId == _filter.AchievementId)
                     .Select(uar => uar.UserId)
                     .ToList();
@@ -72,13 +73,13 @@ namespace BusinessLayer.QueryObjects
             if (_filter.GroupId != 0)
             {
                 return Context
-                    .Set<BaHUserAskedForReward>(ActualTypes.BaHUserAskedForReward)
+                    .Set<BaHuUserAskedForReward>(ActualTypes.BaHuUserAskedForReward)
                     .Where(uc => uc.Achievement.AchievementGroupId == _filter.GroupId)
                     .Select(uar => uar.UserId)
                     .ToList();
             }
             return Context
-                .Set<BaHUserAskedForReward>(ActualTypes.BaHUserAskedForReward)
+                .Set<BaHuUserAskedForReward>(ActualTypes.BaHuUserAskedForReward)
                 .Select(uar => uar.UserId)
                 .ToList();
         }
@@ -88,7 +89,7 @@ namespace BusinessLayer.QueryObjects
             if (_filter.AchievementId != 0)
             {
                 return  Context
-                    .Set<BaHUserCompletedSubTask>(ActualTypes.BaHUserCompletedSubTask)
+                    .Set<BaHuUserCompletedSubTask>(ActualTypes.BaHuUserCompletedSubTask)
                     .Where(uc => uc.SubTask.AchievementId == _filter.AchievementId)
                     .Select(ucs => ucs.UserId)
                     .ToList();
@@ -97,13 +98,13 @@ namespace BusinessLayer.QueryObjects
             if (_filter.GroupId != 0)
             {
                 return  Context
-                    .Set<BaHUserCompletedSubTask>(ActualTypes.BaHUserCompletedSubTask)
+                    .Set<BaHuUserCompletedSubTask>(ActualTypes.BaHuUserCompletedSubTask)
                     .Where(uc => uc.SubTask.Achievement.AchievementGroupId == _filter.GroupId)
                     .Select(ucs => ucs.UserId)
                     .ToList();
             }
             return  Context
-                .Set<BaHUserCompletedSubTask>(ActualTypes.BaHUserCompletedSubTask)
+                .Set<BaHuUserCompletedSubTask>(ActualTypes.BaHuUserCompletedSubTask)
                 .Select(ucs => ucs.UserId)
                 .ToList();
         }
@@ -113,11 +114,11 @@ namespace BusinessLayer.QueryObjects
             if (_filter.AchievementId != 0)
             {
                 return Context
-                    .Set<BaHUserAskedForReward>(ActualTypes.BaHUserAskedForReward)
+                    .Set<BaHuUserAskedForReward>(ActualTypes.BaHuUserAskedForReward)
                     .Where(ur => ur.AchievementId == _filter.AchievementId)
                     .Select(uar => uar.UserId)
                     .Concat(Context
-                    .Set<BaHUserAskedForSubTask>(ActualTypes.BaHUserAskedForSubTask)
+                    .Set<BaHuUserAskedForSubTask>(ActualTypes.BaHuUserAskedForSubTask)
                     .Where(u => u.SubTask.AchievementId == _filter.AchievementId)
                     .Select(uas => uas.UserId))
                     .ToList();
@@ -126,20 +127,20 @@ namespace BusinessLayer.QueryObjects
             if (_filter.GroupId != 0)
             {
                 return  Context
-                    .Set<BaHUserAskedForReward>(ActualTypes.BaHUserAskedForReward)
+                    .Set<BaHuUserAskedForReward>(ActualTypes.BaHuUserAskedForReward)
                     .Where(ur => ur.Achievement.AchievementGroupId == _filter.GroupId)
                     .Select(uar => uar.UserId)
                     .Concat(Context
-                        .Set<BaHUserAskedForSubTask>(ActualTypes.BaHUserAskedForSubTask)
+                        .Set<BaHuUserAskedForSubTask>(ActualTypes.BaHuUserAskedForSubTask)
                         .Where(u => u.SubTask.Achievement.AchievementGroupId == _filter.GroupId)
                         .Select(uas => uas.UserId))
                     .ToList();
             }
             return  Context
-                .Set<BaHUserAskedForReward>(ActualTypes.BaHUserAskedForReward)
+                .Set<BaHuUserAskedForReward>(ActualTypes.BaHuUserAskedForReward)
                 .Select(uar => uar.UserId)
                 .Concat(Context
-                    .Set<BaHUserAskedForSubTask>(ActualTypes.BaHUserAskedForSubTask)
+                    .Set<BaHuUserAskedForSubTask>(ActualTypes.BaHuUserAskedForSubTask)
                     .Select(uas => uas.UserId))
                 .ToList();
         }
@@ -151,7 +152,7 @@ namespace BusinessLayer.QueryObjects
                 return;
             }
             
-            Expression<Func<BaHUser, bool>> toAdd = u => u.UserGroups
+            Expression<Func<User, bool>> toAdd = u => u.UserGroups
                                 .SelectMany(ug => ug.AchievementGroup.Achievements)
                                 .FirstOrDefault(a => a.Id == filter.AchievementId) != null;
             TmpPredicates.Add(toAdd);
@@ -159,33 +160,20 @@ namespace BusinessLayer.QueryObjects
 
         private void FilterCompletedAchievements()
         {
-            Expression<Func<BaHUser, bool>> toAdd = u => _completedAchievementsIds.Contains(u.Id);
+            Expression<Func<User, bool>> toAdd = u => _completedAchievementsIds.Contains(u.Id);
             TmpPredicates.Add(toAdd);
-            //Expression<Func<User, bool>> tet = u => u.UserCompletedAchievements.Where(uc => uc.UserId == u.i);
-            //return queryable
-            //    .Join(Context.Set<BaHUserCompletedAchievements>(ActualTypes.BaHUserCompletedAchievements),
-            //        u => u.Id, uca => uca.UserId, (u, uca) => new {u, uca})
-            //    .Where(uuca => uuca.uca.Achievement.Id == filter.AchievementId)
-            //    .Select(uuca => uuca.u);
         }
 
         private void FilterAskedForReward()
         {
 
-            Expression<Func<BaHUser, bool>> toAdd = u => GetIdsOfAskedUsers().Contains(u.Id);
-            TmpPredicates.Add(toAdd);
-        }
-
-        private void FilterNonCompletedAchievements()
-        {
-            
-            Expression<Func<BaHUser, bool>> toAdd = u => !_completedAchievementsIds.Contains(u.Id);
+            Expression<Func<User, bool>> toAdd = u => GetIdsOfAskedUsers().Contains(u.Id);
             TmpPredicates.Add(toAdd);
         }
 
         private void FilterPartialDoneAchievements()
         {
-            Expression<Func<BaHUser, bool>> toAdd = u => _completedSubTasksIds.Except(_completedAchievementsIds)
+            Expression<Func<User, bool>> toAdd = u => _completedSubTasksIds.Except(_completedAchievementsIds)
                 .Distinct()
                 .Contains(u.Id);
             TmpPredicates.Add(toAdd);
@@ -194,7 +182,7 @@ namespace BusinessLayer.QueryObjects
 
         private void FilterNotStartedAchievements()
         {
-            Expression<Func<BaHUser, bool>> toAdd = u => !_completedAchievementsIds
+            Expression<Func<User, bool>> toAdd = u => !_completedAchievementsIds
                 .Union(_completedSubTasksIds)
                 .Union(_askedAchievementsIds)
                 .Distinct()
@@ -210,7 +198,7 @@ namespace BusinessLayer.QueryObjects
                return;
             }
             
-            Expression<Func<BaHUser, bool>> toAdd = u =>
+            Expression<Func<User, bool>> toAdd = u =>
                 u.UserGroups.FirstOrDefault(ug => ug.AchievementGroup.Id == filter.GroupId) != null;
             TmpPredicates.Add(toAdd);
 

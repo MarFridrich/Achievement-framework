@@ -14,6 +14,6 @@ namespace DAL.BaHuEntities
         [Required] 
         public string Name { get; set; }
         
-        public virtual ICollection<BaHuAchievement> Achievements { get; set; }
+        public ICollection<BaHuAchievement> Achievements { get; set; }
     }
 }

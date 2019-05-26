@@ -35,9 +35,9 @@ namespace DAL.BaHuEntities
     public int RewardId { get; set; }
     
     public BaHuReward Reward { get; set; }
-    public ICollection<BaHUserCompletedAchievement> UserCompletedAchievements { get; set; }
+    public ICollection<BaHuUserCompletedAchievement> UserCompletedAchievements { get; set; }
     
-    public ICollection<BaHUserAskedForReward> UserAskedForRewards { get; set; }
+    public ICollection<BaHuUserAskedForReward> UserAskedForRewards { get; set; }
     [Required]
     [ForeignKey("AchievementGroup")]
     public int AchievementGroupId { get; set; }

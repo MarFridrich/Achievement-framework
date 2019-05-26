@@ -7,16 +7,16 @@ using BusinessLayer.QueryObjects.Base.Results;
 
 namespace BusinessLayer.Services.Generic.Reward
 {
-    public interface IRewardService<TEntity, TRewardDto>
+    public interface IRewardService<TEntity, TRewardDto, TFilterDto>
         where TRewardDto : BaHuRewardDto
     {
-        IQueryable<TRewardDto> ListAllAsync();
+        IQueryable<TRewardDto> ListAll();
         
         Task CreateList(IEnumerable<TRewardDto> entity);
      
         Task<TRewardDto> Get(int id);
 
-        Task<QueryResult<TRewardDto>> ApplyFilter(RewardFilterDto filter);
+        Task<QueryResult<TRewardDto>> ApplyFilter(TFilterDto filter);
         
         Task<TRewardDto> GetWithIncludes(int id, params string[] includes);
      
@@ -26,6 +26,5 @@ namespace BusinessLayer.Services.Generic.Reward
      
         Task Delete(int id);
         
-        Task<TRewardDto> GetRewardForAchievement(int achievementId);
     }
 }

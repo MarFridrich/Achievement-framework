@@ -46,12 +46,20 @@ namespace BusinessLayer.QueryObjects.Base
         }
 
         protected abstract void ApplyWhereClause(TFilter filter);
-        private void CombineTmpPredicatesToOne()
+        private void CombineTmpPredicatesToOne(TFilter filter)
         {
             
             foreach (var predicate in TmpPredicates)
             {
-                Predicate = Predicate != null ? Predicate.And(predicate) : predicate;
+                if (filter.UseAnd)
+                {
+                    Predicate = Predicate != null ? Predicate.And(predicate) : predicate;
+                }
+                else
+                {
+                    Predicate = Predicate != null ? Predicate.Or(predicate) : predicate;
+                }
+                
             }
         }
 
@@ -82,7 +90,7 @@ namespace BusinessLayer.QueryObjects.Base
             ClearPredicates();
             SetVariablesFromFilter(filter);
             ApplyWhereClause(filter);
-            CombineTmpPredicatesToOne();
+            CombineTmpPredicatesToOne(filter);
             var queryable = Context.Set<TEntity>(_realModel);
 
             queryable = filter.Includes.Aggregate(queryable, (current, include) => current.Include(include));

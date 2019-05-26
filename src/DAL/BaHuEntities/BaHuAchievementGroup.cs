@@ -23,10 +23,10 @@ namespace DAL.BaHuEntities
         public byte[] Image { get; set; }
         
         public DateTime ExpiredIn { get; set; }
-        public virtual BaHUser Owner { get; set; }
+        public User Owner { get; set; }
         
-        public virtual ICollection<BaHuAchievement> Achievements { get; set; }
+        public ICollection<BaHuAchievement> Achievements { get; set; }
 
-        public virtual ICollection<BaHUserAchievementGroup> UserAchievementGroups { get; set; }
+        public ICollection<BaHuUserAchievementGroup> UserAchievementGroups { get; set; }
     }
 }

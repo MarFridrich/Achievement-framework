@@ -11,34 +11,35 @@ using DAL.BaHuEntities;
 
 namespace BusinessLayer.Facades
 {
-    public class AchievementGroupFacade<TEntity, TAchievementGroupDto, TUserDto>
-        where TEntity : BaHuAchievementGroup
+    public class AchievementGroupFacade<TEntity, TAchievementGroupDto, TAchievementGroupFilterDto, TUserDto>
+        where TEntity : BaHuAchievementGroup, new()
         where TAchievementGroupDto : BaHuAchievementGroupDto
-        where TUserDto : BaHUserDto
+        where TAchievementGroupFilterDto : AchievementGroupFilterDto, new()
+        where TUserDto : UserDto
+        
     {
-        protected  readonly IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto>
+        protected  readonly IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto, TAchievementGroupFilterDto>
             AchievementGroupService;
 
-        protected IAchievementService<BaHuAchievement, BaHuAchievementDto, TUserDto> AchievementService;
+        protected IAchievementService<BaHuAchievement, BaHuAchievementDto, TUserDto, AchievementFilterDto> AchievementService;
         protected IRepository<BaHuSubTask> SubTaskRepository;
         public AchievementGroupFacade(
-            IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto>
-                achievementGroupService, IAchievementService<BaHuAchievement, BaHuAchievementDto, TUserDto> achievementService, IRepository<BaHuSubTask> subTaskRepository)
+            IAchievementGroupService<TEntity, TAchievementGroupDto, TUserDto, TAchievementGroupFilterDto>
+                achievementGroupService,
+            IAchievementService<BaHuAchievement, BaHuAchievementDto, TUserDto, AchievementFilterDto>
+                achievementService,
+            IRepository<BaHuSubTask> subTaskRepository)
         {
             AchievementGroupService = achievementGroupService;
             AchievementService = achievementService;
             SubTaskRepository = subTaskRepository;
         }
 
-        public async Task<QueryResult<TAchievementGroupDto>> ApplyFilter(AchievementGroupFilterDto filter)
+        public async Task<QueryResult<TAchievementGroupDto>> ApplyFilter(TAchievementGroupFilterDto filter)
         {
             return await AchievementGroupService.ApplyFilter(filter);
         }
         
-        public IEnumerable<TAchievementGroupDto> ListAllAsync(AchievementGroupFilterDto filter)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<bool> CheckIfUserIsGroupAdmin(int groupId, int userId)
         {
@@ -75,7 +76,7 @@ namespace BusinessLayer.Facades
 
         public async Task DeleteGroup(int id)
         {
-            var achievements = await AchievementService.ApplyFilter(new AchievementFilterDto
+            var achievements = await AchievementService.ApplyFilter(new AchievementFilterDto()
             {
                 GroupId = id,
                 Includes = new []{nameof(BaHuAchievement.SubTasks)}
@@ -92,7 +93,7 @@ namespace BusinessLayer.Facades
 
         public async Task<QueryResult<TAchievementGroupDto>> GetOwnGroupsOfUser(int userId, int? page = null)
         {
-            return await AchievementGroupService.ApplyFilter(new AchievementGroupFilterDto
+            return await AchievementGroupService.ApplyFilter(new TAchievementGroupFilterDto
             {
                 UserId = userId
             });
@@ -100,7 +101,7 @@ namespace BusinessLayer.Facades
 
         public async Task<QueryResult<TAchievementGroupDto>> GetGroupsWhichUserOwns(int userId, int? page = null)
         {
-            return await AchievementGroupService.ApplyFilter(new AchievementGroupFilterDto
+            return await AchievementGroupService.ApplyFilter(new TAchievementGroupFilterDto
             {
                 OwnerId = userId,
                 RequestedPageNumber = page
@@ -125,6 +126,27 @@ namespace BusinessLayer.Facades
         public async Task<bool> IsExpired(int groupId)
         {
             return await AchievementGroupService.IsExpired(groupId);
+        }
+
+        public async Task InsertUserIntoAchievementGroup(int userId, int groupId)
+        {
+            await AchievementGroupService.InsertUserIntoAchievementGroup(userId, groupId);
+        }
+
+        public async Task<QueryResult<TAchievementGroupDto>> GetAchievementsGroupsOfUser(int userId)
+        {
+            return await AchievementGroupService.ApplyFilter(new TAchievementGroupFilterDto
+            {
+                UserId = userId
+            });
+        }
+
+        public async Task<QueryResult<TAchievementGroupDto>> GetGroupsWhichUserOwns(int userId)
+        {
+            return await AchievementGroupService.ApplyFilter(new TAchievementGroupFilterDto
+            {
+                OwnerId = userId
+            });
         }
     }
 }

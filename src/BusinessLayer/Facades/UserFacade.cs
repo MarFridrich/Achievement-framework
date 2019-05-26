@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BusinessLayer.DTOs.Base;
 using BusinessLayer.DTOs.Filter.Base;
@@ -8,22 +9,20 @@ using BusinessLayer.Services.Generic.User;
 
 namespace BusinessLayer.Facades
 {
-    public class UserFacade<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto>
-        where TUserDto : BaHUserDto
-        where TAchievementGroupDto : BaHuAchievementGroupDto
-        where TAchievementDto : BaHuAchievementDto
-        where TFilterDto : UserFilterDto
+    public class UserFacade<TUserDto, TFilterDto>
+        where TUserDto : UserDto
+        where TFilterDto : UserFilterDto, new() 
     {
-        protected readonly IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto> UserService;
+        protected readonly IUserService<TUserDto, TFilterDto> UserService;
 
-        public UserFacade(IUserService<TUserDto, TAchievementGroupDto, TAchievementDto, TFilterDto> userService)
+        public UserFacade(IUserService<TUserDto, TFilterDto> userService)
         {
             UserService = userService;
         }
 
-        public IEnumerable<TUserDto> ListAllAsync(UserFilterDto filter)
+        public IQueryable<TUserDto> ListAll()
         {
-            throw new NotImplementedException();
+            return UserService.ListAll();
         }
 
         public async Task<TUserDto> GetUserById(int id)

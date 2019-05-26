@@ -12,40 +12,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Generic.Reward
 {
-    public class RewardService<TEntity, TRewardDto> :
-        RepositoryServiceBase<TEntity, TRewardDto, RewardFilterDto>, IRewardService<TEntity, TRewardDto>
+    public class RewardService<TEntity, TRewardDto, TFilterDto> :
+        RepositoryServiceBase<TEntity, TRewardDto, TFilterDto>, IRewardService<TEntity, TRewardDto, TFilterDto>
         
-        where TRewardDto : BaHuRewardDto
         where TEntity : BaHuReward, new()
+        where TRewardDto : BaHuRewardDto
+        where TFilterDto : RewardFilterDto, new()
     {
-        private readonly IRepository<BaHuAchievement> _achievementRepository;
-        protected readonly RewardQuery<TEntity, TRewardDto> Query;
+        protected readonly RewardQuery<TEntity, TRewardDto, TFilterDto> Query;
 
         public RewardService(IMapper mapper, IRepository<TEntity> repository, DbContext context, Types actualModels,
-            IRepository<BaHuAchievement> achievementRepository,
-            RewardQuery<TEntity, TRewardDto> query) 
+            RewardQuery<TEntity, TRewardDto, TFilterDto> query) 
             : base(mapper,
             repository,
             context,
             actualModels
             )
         {
-            _achievementRepository = achievementRepository;
             Query = query;
         }
 
-        public async Task<QueryResult<TRewardDto>> ApplyFilter(RewardFilterDto filter)
+        public async Task<QueryResult<TRewardDto>> ApplyFilter(TFilterDto filter)
         {
             return await Query.ExecuteAsync(filter);
         }
-
-        public async Task<TRewardDto> GetRewardForAchievement(int achievementId)
-        {
-            var achievement = await _achievementRepository.Get(achievementId);
-
-            return Mapper.Map<TRewardDto>(achievement.Reward);
-        }
-
         
     }
 }

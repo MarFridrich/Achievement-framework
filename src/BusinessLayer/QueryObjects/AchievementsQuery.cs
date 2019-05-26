@@ -7,15 +7,17 @@ using BusinessLayer.DTOs.Common;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.DTOs.Filter.Enums;
 using BusinessLayer.Helpers;
+using Castle.Core.Internal;
 using DAL.BaHuEntities;
 using DAL.BaHuEntities.JoinTables;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
-    public class AchievementsQuery<TEntity, TDto> : QueryBase<TEntity, TDto, AchievementFilterDto>
+    public class AchievementsQuery<TEntity, TDto, TFilterDto> : QueryBase<TEntity, TDto, TFilterDto>
         where TEntity : BaHuAchievement, new()
         where TDto : DtoBase
+        where TFilterDto : AchievementFilterDto
     {
 
         public AchievementsQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper,
@@ -23,7 +25,7 @@ namespace BusinessLayer.QueryObjects
         {
         }
 
-        protected override void ApplyWhereClause(AchievementFilterDto filter)
+        protected override void ApplyWhereClause(TFilterDto filter)
         {
             FilterByUserId(filter);
             FilterGroupId(filter);
@@ -33,7 +35,7 @@ namespace BusinessLayer.QueryObjects
         }
 
 
-        private void FilterCompletedOnly(AchievementFilterDto filter)
+        private void FilterCompletedOnly(TFilterDto filter)
         {
             
             var achievementsCompleted = GetIdsOfAchievementsIdsWhichIsCompleted(filter);
@@ -42,21 +44,21 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private IQueryable<int> GetIdsOfAchievementsIdsWhichHasSubTaskCompleted(AchievementFilterDto filter)
+        private IQueryable<int> GetIdsOfAchievementsIdsWhichHasSubTaskCompleted(TFilterDto filter)
         {
             return Context
-                .Set<BaHUserCompletedSubTask>(ActualTypes.BaHUserCompletedSubTask)
+                .Set<BaHuUserCompletedSubTask>(ActualTypes.BaHuUserCompletedSubTask)
                 .Select(ucs => ucs.SubTask.AchievementId);
         }
 
-        private IQueryable<int> GetIdsOfAchievementsIdsWhichIsCompleted(AchievementFilterDto filter)
+        private IQueryable<int> GetIdsOfAchievementsIdsWhichIsCompleted(TFilterDto filter)
         {
             return Context
-                .Set<BaHUserCompletedAchievement>(ActualTypes.BaHUserCompletedAchievements)
+                .Set<BaHuUserCompletedAchievement>(ActualTypes.BaHuUserCompletedAchievements)
                 .Select(uca => uca.AchievementId);
         }
 
-        private void FilterPartialCompletedOnly(AchievementFilterDto filter)
+        private void FilterPartialCompletedOnly(TFilterDto filter)
         {
             var achievementsPartialCompletedIds = GetIdsOfAchievementsIdsWhichHasSubTaskCompleted(filter);
 
@@ -67,7 +69,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterNotStartedOnly(AchievementFilterDto filter)
+        private void FilterNotStartedOnly(TFilterDto filter)
         {
             var startedOrCompleted = GetIdsOfAchievementsIdsWhichIsCompleted(filter)
                 .Union(GetIdsOfAchievementsIdsWhichHasSubTaskCompleted(filter));
@@ -75,7 +77,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterNotCompletedOnly(AchievementFilterDto filter)
+        private void FilterNotCompletedOnly(TFilterDto filter)
         {
             var completed = GetIdsOfAchievementsIdsWhichIsCompleted(filter);
             Expression<Func<TEntity, bool>> toAdd = ach => !completed.Contains(ach.Id);
@@ -83,7 +85,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterAchievementEvaluation(AchievementFilterDto filter)
+        private void FilterAchievementEvaluation(TFilterDto filter)
         {
             if (filter.EvaluationType == null)
             {
@@ -95,7 +97,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterGroupId(AchievementFilterDto filter)
+        private void FilterGroupId(TFilterDto filter)
         {
             if (filter.GroupId == 0)
             {
@@ -107,7 +109,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterFulfillType(AchievementFilterDto filter)
+        private void FilterFulfillType(TFilterDto filter)
         {
             if (filter.Type == null)
             {
@@ -133,14 +135,14 @@ namespace BusinessLayer.QueryObjects
             }
         }
 
-        private void FilterByUserId(AchievementFilterDto filter)
+        private void FilterByUserId(TFilterDto filter)
         {
             if (filter.UserId == 0)
             {
                 return;
             }
 
-            var achievementsId = Context.Set<BaHUserAchievementGroup>(ActualTypes.BaHUserAchievementGroup)
+            var achievementsId = Context.Set<BaHuUserAchievementGroup>(ActualTypes.BaHuUserAchievementGroup)
                 .Where(uag => uag.UserId == filter.UserId)
                 .SelectMany(uag => uag.AchievementGroup.Achievements.Select(a => a.Id));
 
@@ -148,7 +150,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterPeopleDoneCount(AchievementFilterDto filter)
+        private void FilterPeopleDoneCount(TFilterDto filter)
         {
             if (filter.PeopleDoneCount == null)
             {

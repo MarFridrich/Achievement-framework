@@ -12,15 +12,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
-    public class AchievementGroupQuery<TEntity, TDto> : QueryBase<TEntity, TDto, AchievementGroupFilterDto>
+    public class AchievementGroupQuery<TEntity, TDto, TFilterDto> : QueryBase<TEntity, TDto, TFilterDto>
         where TEntity : BaHuAchievementGroup
         where TDto : BaHuAchievementGroupDto
+        where TFilterDto : AchievementGroupFilterDto
     {
         public AchievementGroupQuery(DbContext context, IMapper mapper, Types actualTypes) : base(context, mapper, actualTypes)
         {
         }
 
-        protected override void ApplyWhereClause(AchievementGroupFilterDto filter)
+        protected override void ApplyWhereClause(TFilterDto filter)
         {
             FilterGroupName(filter);
             FilterOwnerId(filter);
@@ -28,7 +29,7 @@ namespace BusinessLayer.QueryObjects
             FilterExpired(filter);
         }
 
-        private void FilterGroupName(AchievementGroupFilterDto filter)
+        private void FilterGroupName(TFilterDto filter)
         {
             if (string.IsNullOrWhiteSpace(filter.Name))
             {
@@ -39,7 +40,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterOwnerId(AchievementGroupFilterDto filter)
+        private void FilterOwnerId(TFilterDto filter)
         {
             if (filter.OwnerId == 0)
             {
@@ -50,14 +51,14 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterUserId(AchievementGroupFilterDto filter)
+        private void FilterUserId(TFilterDto filter)
         {
             if (filter.UserId == 0)
             {
                 return;
             }
 
-            var groupIds = Context.Set<BaHUserAchievementGroup>(ActualTypes.BaHUserAchievementGroup)
+            var groupIds = Context.Set<BaHuUserAchievementGroup>(ActualTypes.BaHuUserAchievementGroup)
                 .Where(uag => uag.UserId == filter.UserId)
                 .Select(uag => uag.AchievementGroupId);
             
@@ -65,7 +66,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterExpired(AchievementGroupFilterDto filter)
+        private void FilterExpired(TFilterDto filter)
         {
             if (filter.NonExpired == false)
             {

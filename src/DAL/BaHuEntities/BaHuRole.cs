@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DAL.BaHuEntities
 {
-    public class BaHuRole : IdentityRole<int>, IEntity
+    public class BaHuRole : IdentityRole<int>
     {
     }
 }

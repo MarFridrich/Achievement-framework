@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using DAL.BaHuEntities.Interfaces;
 using DAL.BaHuEntities.JoinTables;
 
@@ -9,7 +10,11 @@ namespace DAL.BaHuEntities
     {
         public int Id { get; set; }
         
+        [Required]
+        [ForeignKey("Achievement")]
         public int AchievementId { get; set; }
+        
+        public BaHuAchievement Achievement { get; set; }
         
         [Required]
         public string Name { get; set; }
@@ -17,10 +22,8 @@ namespace DAL.BaHuEntities
         [Required]
         public string Description { get; set; }
         
-        public BaHuAchievement Achievement { get; set; }
+        public ICollection<BaHuUserAskedForSubTask> UserAskedForSubTasks { get; set; }
         
-        public ICollection<BaHUserAskedForSubTask> UserAskedForSubTasks { get; set; }
-        
-        public ICollection<BaHUserCompletedSubTask> UserCompletedSubTasks { get; set; }
+        public ICollection<BaHuUserCompletedSubTask> UserCompletedSubTasks { get; set; }
     }
 }

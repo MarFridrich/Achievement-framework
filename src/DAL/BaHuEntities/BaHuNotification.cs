@@ -17,13 +17,13 @@ namespace DAL.BaHuEntities
         [ForeignKey("CreatedByUser")]
         public int? CreatedByUserId { get; set; }
         
-        public BaHUser CreatedByUser { get; set; }
+        public User CreatedByUser { get; set; }
 
         [Required]
         [ForeignKey("User")]
         public int UserId { get; set; }
         
-        public BaHUser User { get; set; }
+        public User User { get; set; }
        
         [ForeignKey("Achievement")]
         public int? AchievementId { get; set; }

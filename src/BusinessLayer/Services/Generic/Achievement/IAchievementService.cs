@@ -10,16 +10,17 @@ using DAL.BaHuEntities.Interfaces;
 
 namespace BusinessLayer.Services.Generic.Achievement
 {
-    public interface IAchievementService<TEntity, TAchievementDto, TUserDto>
+    public interface IAchievementService<TEntity, TAchievementDto, TUserDto, TFilterDto>
         where TEntity : class, IEntity
         where TAchievementDto : BaHuAchievementDto
-        where TUserDto : BaHUserDto
+        where TUserDto : UserDto
     {
-             IQueryable<TAchievementDto> ListAllAsync();
+             IQueryable<TAchievementDto> ListAll();
 
-             Task<QueryResult<TAchievementDto>> ApplyFilter(AchievementFilterDto filter);
+             Task<QueryResult<TAchievementDto>> ApplyFilter(TFilterDto filter);
              
              Task CreateList(IEnumerable<TAchievementDto> entity);
+
              Task<TAchievementDto> Get(int id);
      
              Task<int> Create(TAchievementDto entity);
@@ -28,30 +29,18 @@ namespace BusinessLayer.Services.Generic.Achievement
      
              Task Delete(int id);
 
-             Task<IEnumerable<TAchievementDto>> LoadAllNavigationProperties(IEnumerable<TAchievementDto> entities);
-
-             Task<TAchievementDto> LoadNavigationProperties(int id, IEnumerable<IEnumerable<string>> includes);
              Task<TAchievementDto> GetWithIncludes(int id, params string[] includes);
 
-             Task<List<TUserDto>> GetUserWhichCompletedAchievement(int achievementId);
-
-             Task<IEnumerable<TUserDto>> GetAllUsersWhichHaveAchievement(int achievementId);
+             Task<IEnumerable<TUserDto>> GetUserWhichCompletedAchievement(int achievementId);
              
-             Task<TUserDto> GetAchievementGroupOwner(int achievementId);
-
-             Task<IEnumerable<TAchievementDto>> GetAllAchievementsOfUser(int userId);
-
-             Task<QueryResult<TAchievementDto>> GetNonCompletedAchievementsOfUser(int userId);
-
-             Task<QueryResult<TAchievementDto>> GetAllAchievementsFromGroup(int groupId);
-
-             Task<bool> CheckIfUserHasAchievement(int achievementId, int userId);
+             Task<bool> CheckIfUserHasAchievement(int userId, int achievementId);
              
              Task<IEnumerable<ValueTuple<TUserDto, DateTime>>> GetUsersWhichAskedForReward(int achievementId);
 
              Task<string> ExportGroupAchievementsToJson(int groupId);
 
              byte[] MakeBytesFromString(string input);
+
              Task ImportAchievementsFromFileAndAddToGroup(Stream file, int groupId);
 
              Task<bool> AskForRewardByUser(int userId, int achievementId);

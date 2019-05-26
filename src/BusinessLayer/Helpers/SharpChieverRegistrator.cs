@@ -51,18 +51,18 @@ namespace BusinessLayer.Helpers
                                 .WithScopedLifetime());
            
             DetectGenericParametersOfDbContext<TAchievementDbContext>();
-            services.AddScoped(typeof(INotificationService<,>), typeof(NotificationService<,>));
-            services.AddScoped(typeof(IAchievementService<,,>), typeof(AchievementService<,,>));
-            services.AddScoped(typeof(IAchievementGroupService<,,>), typeof(AchievementGroupService<,,>));
-            services.AddScoped(typeof(IRewardService<,>), typeof(RewardService<,>));
-            services.AddScoped(typeof(IUserService<,,,>), typeof(UserService<,,,>));
+            services.AddScoped(typeof(INotificationService<,,>), typeof(NotificationService<,,>));
+            services.AddScoped(typeof(IAchievementService<,,,>), typeof(AchievementService<,,,>));
+            services.AddScoped(typeof(IAchievementGroupService<,,,>), typeof(AchievementGroupService<,,,>));
+            services.AddScoped(typeof(IRewardService<,,>), typeof(RewardService<,,>));
+            services.AddScoped(typeof(IUserService<,>), typeof(UserService<,>));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(ISubTaskService<,>), typeof(SubTaskService<,>));
-            services.AddScoped(typeof(AchievementFacade<,,,,,>));
-            services.AddScoped(typeof(AchievementsQuery<,>));
-            services.AddScoped(typeof(AchievementGroupQuery<,>));
-            services.AddScoped(typeof(NotificationQuery<,>));
-            services.AddScoped(typeof(SubTaskFacade<,>));
+            services.AddScoped(typeof(ISubTaskService<,,>), typeof(SubTaskService<,,>));
+            services.AddScoped(typeof(AchievementFacade<,,,,,,>));
+            services.AddScoped(typeof(AchievementsQuery<,,>));
+            services.AddScoped(typeof(AchievementGroupQuery<,,>));
+            services.AddScoped(typeof(NotificationQuery<,,>));
+            services.AddScoped(typeof(SubTaskFacade<,,>));
             services.AddScoped<DbContext, TAchievementDbContext>();
             services.AddSingleton(typeof(Types), _actualTypes);
             

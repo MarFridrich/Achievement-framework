@@ -19,8 +19,6 @@ namespace BusinessLayer.DTOs.Filter.Base
         public int UserId { get; set; }
         
         public int GroupId { get; set; }
-        
-        public bool IncludeAskedForReward { get; set; }
         public AchievementType? Type { get; set; }
 
     }

@@ -14,8 +14,8 @@ namespace DAL
         
     }
     public class BadgerHunterDbContext<TAchievement, TReward, TAchievementGroup> 
-        : BadgerHunterDbContext<BaHuRole, TAchievement, TAchievementGroup, TReward, BaHUserAchievementGroup,
-            BaHUserCompletedAchievement, BaHUserAskedForReward, BaHuNotification, BaHuSubTask, BaHUserAskedForSubTask, BaHUserCompletedSubTask>
+        : BadgerHunterDbContext<BaHuRole, TAchievement, TAchievementGroup, TReward, BaHuUserAchievementGroup,
+            BaHuUserCompletedAchievement, BaHuUserAskedForReward, BaHuNotification, BaHuSubTask, BaHuUserAskedForSubTask, BaHuUserCompletedSubTask>
         where TReward : BaHuReward
         where TAchievement : BaHuAchievement
         where TAchievementGroup : BaHuAchievementGroup
@@ -31,21 +31,19 @@ namespace DAL
   
     
     public class BadgerHunterDbContext<TRole, TAchievement, TAchievementGroup, TReward, TUserAchievementGroups,
-        TUserCompletedAchievements, TUserAskedForReward, TNotification, TSubTasks, TUserAskedForSubTask, TUserCompletedSubTask> : IdentityDbContext<BaHUser, TRole, int>, 
-        IBadgerHunterDbContext<TRole, TAchievement, TAchievementGroup, TReward, TUserAchievementGroups,
-            TUserCompletedAchievements, TNotification, TSubTasks>
-
+        TUserCompletedAchievements, TUserAskedForReward, TNotification, TSubTasks, TUserAskedForSubTask, TUserCompletedSubTask> : IdentityDbContext<User, TRole, int>
+        
         where TRole : BaHuRole
         where TReward : BaHuReward
         where TAchievement : BaHuAchievement
         where TNotification : BaHuNotification
         where TAchievementGroup : BaHuAchievementGroup
-        where TUserAchievementGroups : BaHUserAchievementGroup
-        where TUserCompletedAchievements : BaHUserCompletedAchievement
+        where TUserAchievementGroups : BaHuUserAchievementGroup
+        where TUserCompletedAchievements : BaHuUserCompletedAchievement
         where TSubTasks : BaHuSubTask
-        where TUserAskedForReward : BaHUserAskedForReward
-        where TUserAskedForSubTask : BaHUserAskedForSubTask
-        where TUserCompletedSubTask : BaHUserCompletedSubTask
+        where TUserAskedForReward : BaHuUserAskedForReward
+        where TUserAskedForSubTask : BaHuUserAskedForSubTask
+        where TUserCompletedSubTask : BaHuUserCompletedSubTask
     
     {
         public DbSet<TReward> Rewards { get; set; }
@@ -68,22 +66,22 @@ namespace DAL
         {
             base.OnModelCreating(builder);
             
-            builder.Entity<BaHUserAchievementGroup>()
+            builder.Entity<BaHuUserAchievementGroup>()
                 .HasKey(ug => new {ug.UserId, ug.AchievementGroupId});
 
-            builder.Entity<BaHUserAskedForReward>()
+            builder.Entity<BaHuUserAskedForReward>()
                 .HasKey(uar => new {uar.UserId, uar.AchievementId});
             
-            builder.Entity<BaHUserCompletedAchievement>()
+            builder.Entity<BaHuUserCompletedAchievement>()
                 .HasKey(uca => new {uca.UserId, uca.AchievementId});
 
-            builder.Entity<BaHUserCompletedSubTask>()
+            builder.Entity<BaHuUserCompletedSubTask>()
                 .HasKey(ucs => new {ucs.UserId, ucs.SubTaskId});
             
-            builder.Entity<BaHUserAskedForSubTask>()
+            builder.Entity<BaHuUserAskedForSubTask>()
                 .HasKey(uas => new {uas.UserId, uas.SubTaskId});
 
-            builder.Entity<BaHUserCompletedAchievement>()
+            builder.Entity<BaHuUserCompletedAchievement>()
                 .HasOne(uca => uca.User)
                 .WithMany(uca => uca.UserCompletedAchievements)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -100,12 +98,12 @@ namespace DAL
                 .HasForeignKey(g => g.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            builder.Entity<BaHUserAchievementGroup>()
+            builder.Entity<BaHuUserAchievementGroup>()
                 .HasOne(ag => ag.AchievementGroup)
                 .WithMany(uag => uag.UserAchievementGroups)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            builder.Entity<BaHUserAchievementGroup>()
+            builder.Entity<BaHuUserAchievementGroup>()
                 .HasOne(uag => uag.User)
                 .WithMany(u => u.UserGroups)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -131,12 +129,12 @@ namespace DAL
                 .WithMany(r => r.Achievements)
                 .OnDelete(DeleteBehavior.Cascade);
             
-            builder.Entity<BaHUser>()
-                .HasMany(u => u.OwnAchievementGroups)
+            builder.Entity<User>()
+                .HasMany(u => u.UserOwnsGroups)
                 .WithOne(ag => ag.Owner)
                 .OnDelete(DeleteBehavior.Cascade);
             
-            builder.Entity<BaHUser>()
+            builder.Entity<User>()
                 .HasMany(u => u.UserGroups)
                 .WithOne(ag => ag.User)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -156,31 +154,28 @@ namespace DAL
                 .WithMany(u => u.Notifications)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<BaHUserAskedForSubTask>()
+            builder.Entity<BaHuUserAskedForSubTask>()
                 .HasOne(uas => uas.User)
                 .WithMany(u => u.UserAskedForSubTasks)
                 .OnDelete(DeleteBehavior.Cascade);
             
-            builder.Entity<BaHUserAskedForSubTask>()
+            builder.Entity<BaHuUserAskedForSubTask>()
                 .HasOne(uas => uas.SubTask)
                 .WithMany(s => s.UserAskedForSubTasks)
                 .OnDelete(DeleteBehavior.Cascade);
             
             
-            builder.Entity<BaHUserCompletedSubTask>()
+            builder.Entity<BaHuUserCompletedSubTask>()
                 .HasOne(uas => uas.SubTask)
                 .WithMany(s => s.UserCompletedSubTasks)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            builder.Entity<BaHUserCompletedSubTask>()
+            builder.Entity<BaHuUserCompletedSubTask>()
                 .HasOne(uas => uas.User)
                 .WithMany(s => s.UserCompletedSubTasks)
                 .OnDelete(DeleteBehavior.Restrict);
             
             builder.Ignore<BaHuExtensibleUser>();
-
-
-
 
         }
     }

@@ -7,13 +7,13 @@ namespace DAL.BaHuEntities.JoinTables
     /// <summary>
     /// Represents table, for user and his groups. User can have many groups. 
     /// </summary>
-    public class BaHUserAchievementGroup
+    public class BaHuUserAchievementGroup
     {
         [Required]
         [ForeignKey("User")]
         public int UserId { get; set; }
         
-        public virtual BaHUser User { get; set; }
+        public virtual User User { get; set; }
         
         [Required]
         [ForeignKey("AchievementGroup")]

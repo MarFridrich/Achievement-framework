@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using BusinessLayer.DTOs.Base.JoinTables;
 using BusinessLayer.DTOs.Common;
 using Newtonsoft.Json;
@@ -8,8 +9,10 @@ namespace BusinessLayer.DTOs.Base
 {
     public class BaHuAchievementDto : DtoBase
     {
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public string Description { get; set; }
 
         [JsonIgnore]
@@ -21,21 +24,23 @@ namespace BusinessLayer.DTOs.Base
     
         public DateTime ValidUntil { get; set; }
       
+        [Required]
         [JsonIgnore]
         public int RewardId { get; set; }
     
         public BaHuRewardDto Reward { get; set; }
         
         [JsonIgnore]
-        public ICollection<BaHUserCompletedAchievementDto> UserCompletedAchievements { get; set; }
+        public ICollection<BaHuUserCompletedAchievementDto> UserCompletedAchievements { get; set; }
         
         [JsonIgnore]
-        public ICollection<BaHUserAskedForRewardDto> UserAskedForRewards { get; set; }
+        public ICollection<BaHuUserAskedForRewardDto> UserAskedForRewards { get; set; }
     
+        [Required]
         [JsonIgnore]
         public int AchievementGroupId { get; set; }
     
         [JsonIgnore]
-        public virtual BaHuAchievementGroupDto AchievementGroup { get; set; }
+        public BaHuAchievementGroupDto AchievementGroup { get; set; }
     }
 }

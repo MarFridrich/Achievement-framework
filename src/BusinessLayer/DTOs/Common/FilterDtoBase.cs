@@ -12,5 +12,7 @@ namespace BusinessLayer.DTOs.Common
 
         public string[] Includes { get; set; } = { };
 
+        public bool UseAnd { get; set; } = true;
+
     }
 }

@@ -18,15 +18,15 @@ namespace BusinessLayer.Helpers
 
         public Type BaHuSubTask { get; }
 
-        public Type BaHUserAchievementGroup { get; }
+        public Type BaHuUserAchievementGroup { get; }
 
-        public Type BaHUserAskedForReward { get; }
+        public Type BaHuUserAskedForReward { get; }
 
-        public Type BaHUserCompletedAchievements { get; }
+        public Type BaHuUserCompletedAchievements { get; }
         
-        public Type BaHUserCompletedSubTask { get; }
+        public Type BaHuUserCompletedSubTask { get; }
         
-        public Type BaHUserAskedForSubTask { get; }
+        public Type BaHuUserAskedForSubTask { get; }
 
 
         public Types(Type role, Type achievement, Type achievementGroup, Type reward, Type userAchievementGroup,
@@ -41,13 +41,13 @@ namespace BusinessLayer.Helpers
             BaHuAchievement = achievement;
             BaHuAchievementGroup = achievementGroup;
             BaHuReward = reward;
-            BaHUserAchievementGroup = userAchievementGroup;
-            BaHUserCompletedAchievements = userCompletedAchievement;
-            BaHUserAskedForReward = userAskedReward;
+            BaHuUserAchievementGroup = userAchievementGroup;
+            BaHuUserCompletedAchievements = userCompletedAchievement;
+            BaHuUserAskedForReward = userAskedReward;
             BaHuNotification = notification;
             BaHuSubTask = subTask;
-            BaHUserCompletedSubTask = userCompletedSubTask;
-            BaHUserAskedForSubTask = userAskedForSubTask;
+            BaHuUserCompletedSubTask = userCompletedSubTask;
+            BaHuUserAskedForSubTask = userAskedForSubTask;
         }
     }
 }

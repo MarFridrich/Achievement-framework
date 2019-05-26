@@ -13,9 +13,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
 {
-    public class SubTaskQuery<TEntity, TSubTaskDto> : QueryBase<TEntity, TSubTaskDto, SubTaskFilterDto>
+    public class SubTaskQuery<TEntity, TSubTaskDto, TFilterDto> : QueryBase<TEntity, TSubTaskDto, TFilterDto>
         where TEntity : BaHuSubTask
         where TSubTaskDto : BaHuSubTaskDto
+        where TFilterDto : SubTaskFilterDto
     {
         private SubTaskFilterDto _filter { get; set; }
         
@@ -27,7 +28,7 @@ namespace BusinessLayer.QueryObjects
         private IQueryable<int> GetCompletedSubTasksIds()
         {
             var userCompletedSubTasks =
-                Context.Set<BaHUserCompletedSubTask>(ActualTypes.BaHUserCompletedSubTask);
+                Context.Set<BaHuUserCompletedSubTask>(ActualTypes.BaHuUserCompletedSubTask);
             if (_filter.UserId != 0)
             {
                 userCompletedSubTasks = userCompletedSubTasks.Where(ucs => ucs.UserId == _filter.UserId);
@@ -45,7 +46,7 @@ namespace BusinessLayer.QueryObjects
 
         private IQueryable<int> GetAskedForSubTasksIds()
         {
-            var askedForSubTask = Context.Set<BaHUserAskedForSubTask>(ActualTypes.BaHUserAskedForSubTask);
+            var askedForSubTask = Context.Set<BaHuUserAskedForSubTask>(ActualTypes.BaHuUserAskedForSubTask);
             if (_filter.UserId != 0)
             {
                 askedForSubTask = askedForSubTask.Where(uas => uas.UserId == _filter.UserId);
@@ -140,15 +141,13 @@ namespace BusinessLayer.QueryObjects
                 return;
             }
 
-            var ids = Context.Set<BaHUser>()
-                .SelectMany(u => u.UserGroups
-                    .SelectMany(ug => ug.AchievementGroup.Achievements
-                        .SelectMany(a => a.SubTasks
-                            .Select(s => s.Id))));
-            Expression<Func<TEntity, bool>> toAdd = s => ids.Contains(s.Id);
+            Expression<Func<TEntity, bool>> toAdd = s => s.Achievement
+                                                             .AchievementGroup
+                                                             .UserAchievementGroups
+                                                             .Where(u => u.UserId == filter.UserId) != null;
             TmpPredicates.Add(toAdd);
         }
-        protected override void ApplyWhereClause(SubTaskFilterDto filter)
+        protected override void ApplyWhereClause(TFilterDto filter)
         {
             _filter = filter;
             FilterName(filter);
