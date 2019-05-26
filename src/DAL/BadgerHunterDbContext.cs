@@ -5,32 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL
 {
-    public class BadgerHunterDbContext : BadgerHunterDbContext<BaHuAchievement, BaHuReward, BaHuAchievementGroup>
-    {
-        public BadgerHunterDbContext(DbContextOptions options) 
-            : base(options)
-        {
-        }
-        
-    }
-    public class BadgerHunterDbContext<TAchievement, TReward, TAchievementGroup> 
-        : BadgerHunterDbContext<BaHuRole, TAchievement, TAchievementGroup, TReward, BaHuUserAchievementGroup,
-            BaHuUserCompletedAchievement, BaHuUserAskedForReward, BaHuNotification, BaHuSubTask, BaHuUserAskedForSubTask, BaHuUserCompletedSubTask>
-        where TReward : BaHuReward
-        where TAchievement : BaHuAchievement
-        where TAchievementGroup : BaHuAchievementGroup
-    {
-        
-        public BadgerHunterDbContext(DbContextOptions options)
-            : base(options)
-        {
-        }
-
-    }
-    
-  
-    
-    public class BadgerHunterDbContext<TRole, TAchievement, TAchievementGroup, TReward, TUserAchievementGroups,
+    public class BadgerHunterDbContext<TExtendedUser, TRole, TAchievement, TAchievementGroup, TReward, TUserAchievementGroups,
         TUserCompletedAchievements, TUserAskedForReward, TNotification, TSubTasks, TUserAskedForSubTask, TUserCompletedSubTask> : IdentityDbContext<User, TRole, int>
         
         where TRole : BaHuRole
@@ -44,6 +19,7 @@ namespace DAL
         where TUserAskedForReward : BaHuUserAskedForReward
         where TUserAskedForSubTask : BaHuUserAskedForSubTask
         where TUserCompletedSubTask : BaHuUserCompletedSubTask
+        where TExtendedUser : BaHuExtensibleUser
     
     {
         public DbSet<TReward> Rewards { get; set; }
@@ -56,6 +32,7 @@ namespace DAL
         public DbSet<TUserAskedForReward> UserAskedForRewards { get; set; }
         public DbSet<TUserCompletedSubTask> UserCompletedSubTasks { get; set; }
         public DbSet<TUserAskedForSubTask> UserAskedForSubTasks { get; set; }
+        public DbSet<TExtendedUser> ExtendedUsers { get; set; }
         
         public BadgerHunterDbContext(DbContextOptions options)
             : base(options)

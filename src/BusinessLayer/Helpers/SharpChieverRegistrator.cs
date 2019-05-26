@@ -72,13 +72,13 @@ namespace BusinessLayer.Helpers
         private static void DetectGenericParametersOfDbContext<TAchievementDbContext>()
             where TAchievementDbContext : DbContext
         {
-            var context = FindGenericBaseType(typeof(TAchievementDbContext), typeof(BadgerHunterDbContext<,,,,,,,,,,>));
+            var context = FindGenericBaseType(typeof(TAchievementDbContext), typeof(BadgerHunterDbContext<,,,,,,,,,,,>));
             if (context == null) return;
             
-            _actualTypes = new Types(context.GenericTypeArguments[0], context.GenericTypeArguments[1],
-                context.GenericTypeArguments[2], context.GenericTypeArguments[3], context.GenericTypeArguments[4],
-                context.GenericTypeArguments[5], context.GenericTypeArguments[6], context.GenericTypeArguments[7],
-                context.GenericTypeArguments[8], context.GenericTypeArguments[9], context.GenericTypeArguments[10]);
+            _actualTypes = new Types(context.GenericTypeArguments[1], context.GenericTypeArguments[2],
+                context.GenericTypeArguments[3], context.GenericTypeArguments[4], context.GenericTypeArguments[5],
+                context.GenericTypeArguments[6], context.GenericTypeArguments[7], context.GenericTypeArguments[8],
+                context.GenericTypeArguments[9], context.GenericTypeArguments[10], context.GenericTypeArguments[11]);
         }
 
         private static TypeInfo FindGenericBaseType(Type currentType, Type genericBaseType)
