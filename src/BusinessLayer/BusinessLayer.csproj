@@ -5,12 +5,13 @@
         <LangVersion>latest</LangVersion>
         <Authors>Marek Fridrich</Authors>
         <PackageId>BadgerHunter.BusinessLayer</PackageId>
-        <PackageVersion>1.0.5</PackageVersion>
+        <PackageVersion>1.0.0</PackageVersion>
         <Title>BadgerHunter.BusinessLayer</Title>
         <Description>Package containing business layer of BadgerHunter</Description>
         <PackageProjectUrl>https://github.com/MarFridrich/Achievement-framework</PackageProjectUrl>
         <RepositoryUrl>https://github.com/MarFridrich/Achievement-framework</RepositoryUrl>
-        <Copyright>Copiright 2019</Copyright>
+        <Copyright>Copyright 2019</Copyright>
+        <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>

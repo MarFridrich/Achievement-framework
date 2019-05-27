@@ -8,12 +8,13 @@
 <Authors>Marek Fridrich</Authors>
 <Product>BadgerHunter</Product>
 <NeutralLanguage>en</NeutralLanguage>
-<PackageVersion>1.0.5</PackageVersion>
+<PackageVersion>1.0.0</PackageVersion>
 <Title>BadgerHunter.DAL</Title>
 <PackageProjectUrl>https://github.com/MarFridrich/Achievement-framework</PackageProjectUrl>
 <RepositoryUrl>https://github.com/MarFridrich/Achievement-framework</RepositoryUrl>
 <Description>Package containing database layer of BadgerHunter</Description>
-<Copyright>Copyright 2019</Copyright> 
+<Copyright>Copyright 2019</Copyright>
+        <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
