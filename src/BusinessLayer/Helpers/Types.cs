@@ -1,4 +1,6 @@
 using System;
+using DAL.BaHuEntities;
+using DAL.BaHuEntities.JoinTables;
 
 namespace BusinessLayer.Helpers
 {
@@ -48,6 +50,21 @@ namespace BusinessLayer.Helpers
             BaHuSubTask = subTask;
             BaHuUserCompletedSubTask = userCompletedSubTask;
             BaHuUserAskedForSubTask = userAskedForSubTask;
+        }
+
+        public Types()
+        {
+            BaHuRole = typeof(BaHuRole);
+            BaHuAchievement = typeof(BaHuAchievement);
+            BaHuAchievementGroup = typeof(BaHuAchievementGroup);
+            BaHuReward = typeof(BaHuReward);
+            BaHuUserAchievementGroup = typeof(BaHuAchievementGroup);
+            BaHuUserCompletedAchievements = typeof(BaHuUserCompletedAchievement);
+            BaHuUserAskedForReward = typeof(BaHuUserAskedForReward);
+            BaHuNotification = typeof(BaHuNotification);
+            BaHuSubTask = typeof(BaHuSubTask);
+            BaHuUserCompletedSubTask = typeof(BaHuUserCompletedSubTask);
+            BaHuUserAskedForSubTask = typeof(BaHuUserAskedForSubTask);
         }
     }
 }

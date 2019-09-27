@@ -37,7 +37,7 @@ namespace BusinessLayer.QueryObjects
             {
                 return;
             }
-            Expression<Func<TEntity, bool>> toAdd = r => r.Achievements.Where(a => a.Id == filter.AchievementId) != null;
+            Expression<Func<TEntity, bool>> toAdd = r => r.Achievements.Any(a => a.Id == filter.AchievementId);
             TmpPredicates.Add(toAdd);
         }
 

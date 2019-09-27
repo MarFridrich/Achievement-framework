@@ -5,6 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL
 {
+    public class BadgerHunterDbContextBase : BadgerHunterDbContext<BaHuExtensibleUser, BaHuRole, BaHuAchievement,
+        BaHuAchievementGroup, BaHuReward, BaHuUserAchievementGroup, BaHuUserCompletedAchievement, BaHuUserAskedForReward
+        , BaHuNotification, BaHuSubTask, BaHuUserAskedForSubTask, BaHuUserCompletedSubTask>
+    {
+        public BadgerHunterDbContextBase(DbContextOptions options) : base(options)
+        {
+        }
+    }
+
     public class BadgerHunterDbContext<TExtendedUser, TRole, TAchievement, TAchievementGroup, TReward, TUserAchievementGroups,
         TUserCompletedAchievements, TUserAskedForReward, TNotification, TSubTasks, TUserAskedForSubTask, TUserCompletedSubTask> : IdentityDbContext<User, TRole, int>
         

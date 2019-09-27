@@ -62,26 +62,28 @@ namespace BusinessLayer.QueryObjects
 
         private void FilterAskedForSubTask()
         {
-            var askedForSubTask = GetAskedForSubTasksIds();
-            Expression<Func<TEntity, bool>> toAdd = s => askedForSubTask.Contains(s.Id);
+//            var askedForSubTask = GetAskedForSubTasksIds();
+//            Expression<Func<TEntity, bool>> toAdd = s => askedForSubTask.Contains(s.Id);
+            Expression<Func<TEntity, bool>> toAdd = s => s.UserAskedForSubTasks.Any();
             TmpPredicates.Add(toAdd);
         }
 
         private void FilterCompletedOnly()
         {
-            var completedIds = GetCompletedSubTasksIds();
-            Expression<Func<TEntity, bool>> toAdd = s => completedIds.Contains(s.Id);
+//            var completedIds = GetCompletedSubTasksIds();
+//            Expression<Func<TEntity, bool>> toAdd = s => completedIds.Contains(s.Id);
+            Expression<Func<TEntity, bool>> toAdd = s => s.UserCompletedSubTasks.Any();
             TmpPredicates.Add(toAdd);
         }
 
         private void FilterNonCompletedOnly()
         {
-            var completedIds = GetCompletedSubTasksIds();
-            Expression<Func<TEntity, bool>> toAdd = s => !completedIds.Contains(s.Id);
+//            var completedIds = GetCompletedSubTasksIds();
+            Expression<Func<TEntity, bool>> toAdd = s => !s.UserCompletedSubTasks.Any();
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterAccomplishType(SubTaskFilterDto filter)
+        private void FilterAccomplishType(TFilterDto filter)
         {
             if (filter.AccomplishType == SubTaskAccomplishTypes.All)
             {
@@ -104,7 +106,7 @@ namespace BusinessLayer.QueryObjects
             }
         }
 
-        private void FilterName(SubTaskFilterDto filter)
+        private void FilterName(TFilterDto filter)
         {
             if (string.IsNullOrEmpty(filter.Name))
             {
@@ -114,7 +116,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
         
-        private void FilterDescription(SubTaskFilterDto filter)
+        private void FilterDescription(TFilterDto filter)
         {
             if (string.IsNullOrEmpty(filter.Description))
             {
@@ -124,7 +126,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
         
-        private void FilterAchievementId(SubTaskFilterDto filter)
+        private void FilterAchievementId(TFilterDto filter)
         {
             if (filter.AchievementId == 0)
             {
@@ -134,7 +136,7 @@ namespace BusinessLayer.QueryObjects
             TmpPredicates.Add(toAdd);
         }
 
-        private void FilterUserId(SubTaskFilterDto filter)
+        private void FilterUserId(TFilterDto filter)
         {
             if (filter.UserId == 0)
             {
@@ -144,9 +146,10 @@ namespace BusinessLayer.QueryObjects
             Expression<Func<TEntity, bool>> toAdd = s => s.Achievement
                                                              .AchievementGroup
                                                              .UserAchievementGroups
-                                                             .Where(u => u.UserId == filter.UserId) != null;
+                                                             .Any(u => u.UserId == filter.UserId);
             TmpPredicates.Add(toAdd);
         }
+
         protected override void ApplyWhereClause(TFilterDto filter)
         {
             _filter = filter;

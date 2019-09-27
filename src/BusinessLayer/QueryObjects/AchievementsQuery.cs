@@ -7,7 +7,6 @@ using BusinessLayer.DTOs.Common;
 using BusinessLayer.DTOs.Filter.Base;
 using BusinessLayer.DTOs.Filter.Enums;
 using BusinessLayer.Helpers;
-using Castle.Core.Internal;
 using DAL.BaHuEntities;
 using DAL.BaHuEntities.JoinTables;
 using Microsoft.EntityFrameworkCore;
@@ -38,9 +37,10 @@ namespace BusinessLayer.QueryObjects
         private void FilterCompletedOnly(TFilterDto filter)
         {
             
-            var achievementsCompleted = GetIdsOfAchievementsIdsWhichIsCompleted(filter);
+//            var achievementsCompleted = GetIdsOfAchievementsIdsWhichIsCompleted(filter);
 
-            Expression<Func<TEntity, bool>> toAdd = ach => achievementsCompleted.Contains(ach.Id);
+            Expression<Func<TEntity, bool>> toAdd = ach => ach.UserCompletedAchievements.Any();
+//            Expression<Func<TEntity, bool>> toAdd = ach => achievementsCompleted.Contains(ach.Id);
             TmpPredicates.Add(toAdd);
         }
 
@@ -142,11 +142,12 @@ namespace BusinessLayer.QueryObjects
                 return;
             }
 
-            var achievementsId = Context.Set<BaHuUserAchievementGroup>(ActualTypes.BaHuUserAchievementGroup)
-                .Where(uag => uag.UserId == filter.UserId)
-                .SelectMany(uag => uag.AchievementGroup.Achievements.Select(a => a.Id));
-
-            Expression<Func<TEntity, bool>> toAdd = a => achievementsId.Contains(a.Id);
+//            var achievementsId = Context.Set<BaHuUserAchievementGroup>(ActualTypes.BaHuUserAchievementGroup)
+//                .Where(uag => uag.UserId == filter.UserId)
+//                .SelectMany(uag => uag.AchievementGroup.Achievements.Select(a => a.Id));
+//
+//            Expression<Func<TEntity, bool>> toAdd = a => achievementsId.Contains(a.Id);
+            Expression<Func<TEntity, bool>> toAdd = a => a.AchievementGroup.UserAchievementGroups.Any(x => x.UserId == filter.UserId);
             TmpPredicates.Add(toAdd);
         }
 

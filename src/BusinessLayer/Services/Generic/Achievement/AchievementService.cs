@@ -35,7 +35,7 @@ namespace BusinessLayer.Services.Generic.Achievement
         protected readonly QueryBase<TEntity, TAchievementDto, TFilterDto> Query;
         
         public AchievementService(IMapper mapper, IRepository<TEntity> repository, DbContext context,
-            Types actualModels, AchievementsQuery<TEntity, TAchievementDto, TFilterDto> query,
+            Types actualModels, QueryBase<TEntity, TAchievementDto, TFilterDto> query,
             IRepository<BaHuReward> rewardRepository) : base(mapper, repository, context, actualModels)
         {
             RewardRepository = rewardRepository;

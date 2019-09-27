@@ -10,7 +10,6 @@ using BusinessLayer.Helpers;
 using BusinessLayer.QueryObjects.Base;
 using DAL.BaHuEntities;
 using DAL.BaHuEntities.JoinTables;
-using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.QueryObjects
@@ -154,7 +153,7 @@ namespace BusinessLayer.QueryObjects
             
             Expression<Func<User, bool>> toAdd = u => u.UserGroups
                                 .SelectMany(ug => ug.AchievementGroup.Achievements)
-                                .FirstOrDefault(a => a.Id == filter.AchievementId) != null;
+                                .Any(a => a.Id == filter.AchievementId);
             TmpPredicates.Add(toAdd);
         }
 

@@ -58,11 +58,13 @@ namespace BusinessLayer.QueryObjects
                 return;
             }
 
-            var groupIds = Context.Set<BaHuUserAchievementGroup>(ActualTypes.BaHuUserAchievementGroup)
-                .Where(uag => uag.UserId == filter.UserId)
-                .Select(uag => uag.AchievementGroupId);
-            
-            Expression<Func<TEntity, bool>> toAdd = g => groupIds.Contains(g.Id);
+//            var groupIds = Context.Set<BaHuUserAchievementGroup>(ActualTypes.BaHuUserAchievementGroup)
+//                .Where(uag => uag.UserId == filter.UserId)
+//                .Select(uag => uag.AchievementGroupId);
+
+            Expression<Func<TEntity, bool>> toAdd = g => g.UserAchievementGroups
+                .Any(uag => uag.UserId == filter.UserId);
+//            Expression<Func<TEntity, bool>> toAdd = g => groupIds.Contains(g.Id);
             TmpPredicates.Add(toAdd);
         }
 
