@@ -12,14 +12,12 @@ namespace BusinessLayer.Helpers
             {
                 foundType = actualTypes
                     .GetType()
-                    .GetProperty(insertedType.Name)
+                    .GetProperty(insertedType.Name)?
                     .GetValue(actualTypes) as Type;
 
-                
+
                 if (foundType == null)
-                {
-                    throw new ApplicationException();
-                }
+                    foundType = insertedType;
             }
             else
             {
