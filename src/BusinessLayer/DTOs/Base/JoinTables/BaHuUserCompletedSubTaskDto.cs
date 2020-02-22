@@ -12,9 +12,7 @@ namespace BusinessLayer.DTOs.Base.JoinTables
         
         [Required]
         public int SubTaskId { get; set; }
-        
-        public BaHuSubTaskDto SubTask { get; set; }
-        
+
         public DateTime AccomplishedTime { get; set; }
     }
 }

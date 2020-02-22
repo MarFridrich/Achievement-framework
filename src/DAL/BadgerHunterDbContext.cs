@@ -145,12 +145,12 @@ namespace DAL
             builder.Entity<BaHuUserCompletedSubTask>()
                 .HasOne(uas => uas.SubTask)
                 .WithMany(s => s.UserCompletedSubTasks)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             
             builder.Entity<BaHuUserCompletedSubTask>()
                 .HasOne(uas => uas.User)
                 .WithMany(s => s.UserCompletedSubTasks)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             
             builder.Ignore<BaHuExtensibleUser>();
 

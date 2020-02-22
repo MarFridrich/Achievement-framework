@@ -11,7 +11,6 @@ namespace BusinessLayer.DTOs.Base.JoinTables
         public UserDto User { get; set; }
         
         [Required]
-        
         public int AchievementGroupId { get; set; }
         
         public BaHuAchievementGroupDto AchievementGroup { get; set; }
