@@ -46,16 +46,20 @@ namespace BusinessLayer.QueryObjects
 
         private IQueryable<int> GetIdsOfAchievementsIdsWhichHasSubTaskCompleted(TFilterDto filter)
         {
-            return Context
-                .Set<BaHuUserCompletedSubTask>(ActualTypes.BaHuUserCompletedSubTask)
-                .Select(ucs => ucs.SubTask.AchievementId);
+            var res = Context
+                .Set<BaHuUserCompletedSubTask>(ActualTypes.BaHuUserCompletedSubTask);
+            if (filter.UserId != 0)
+                res = res.Where(x => x.UserId == filter.UserId);
+            return res.Select(x => x.SubTask.AchievementId);
         }
 
         private IQueryable<int> GetIdsOfAchievementsIdsWhichIsCompleted(TFilterDto filter)
         {
-            return Context
-                .Set<BaHuUserCompletedAchievement>(ActualTypes.BaHuUserCompletedAchievements)
-                .Select(uca => uca.AchievementId);
+            var res = Context
+                .Set<BaHuUserCompletedAchievement>(ActualTypes.BaHuUserCompletedAchievements);
+            if (filter.UserId != 0)
+                res = res.Where(x => x.UserId == filter.UserId);
+            return res.Select(x => x.AchievementId);
         }
 
         private void FilterPartialCompletedOnly(TFilterDto filter)
