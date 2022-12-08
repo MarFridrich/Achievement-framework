@@ -19,7 +19,7 @@
       <PackageReference Include="Castle.Windsor" Version="5.0.0" />
       <PackageReference Include="LinqKit.Core" Version="1.1.15" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="2.2.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
       <PackageReference Include="Scrutor" Version="3.0.2" />
       <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="2.1.55" />
     </ItemGroup>
